@@ -5,9 +5,9 @@
    the next burn). Deep links: index.html?mode=FLIGHT&debug=1
    ========================================================================= */
 import {Camera} from './camera.js';
-import {Renderer} from './renderer.js?v=system-map-visual-20261023d';
-import {createSolarSystem, updateOrbits} from './celestial/solarSystem.js?v=system-map-20261022';
-import {Editor} from './construction/editor.js?v=rocket-build-visual-fix-20261023b';
+import {Renderer} from './renderer.js';
+import {createSolarSystem, updateOrbits} from './celestial/solarSystem.js';
+import {Editor} from './construction/editor.js';
 import {symmetricParts} from './construction/symmetry.js';
 import {Rocket} from './rocket/rocket.js';
 import {snapPart} from './rocket/attachmentSystem.js';
@@ -33,9 +33,9 @@ import {SaveManager} from './save/saveManager.js';
 import {buildLibrary, updateBuildStats, getSelectedMissionProfile, setMissionProfile} from './ui/buildUI.js';
 import {MISSION_PRESET_CONFIGS} from './construction/missionPresets.js';
 import {GUIDANCE_DEFAULTS} from './flight/guidance.js';
-import {updateFlightUI} from './ui/flightUI.js?v=flight-dashboard-replica-20261111';
-import {updateBodyInfo, initBodyChips, initBodyFocusList, updateBridgeWarp} from './ui/mapUI.js?v=orbital-console-reference-20261023a';
-import {selectBody, focusBody, fitSystem, fitBody, bodyOrder} from './map/spaceMap.js?v=orbital-console-reference-20261023a';
+import {updateFlightUI} from './ui/flightUI.js';
+import {updateBodyInfo, initBodyChips, initBodyFocusList, updateBridgeWarp} from './ui/mapUI.js';
+import {selectBody, focusBody, fitSystem, fitBody, bodyOrder} from './map/spaceMap.js';
 
 const WARP_STEPS = [1, 2, 5, 10, 25, 50, 100, 500, 1000, 2500, 10000];
 // Flight integrates the vehicle every substep, so it stays on the slow end of

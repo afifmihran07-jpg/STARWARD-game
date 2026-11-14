@@ -4,9 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STARWARD — Space Mission Design & Flight Simulation</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=starward-flight-realism-20261016-v643">
-    <link rel="stylesheet" href="style.css?v=flight-dashboard-replica-20261111">
-    <link rel="stylesheet" href="css/flight-dashboard.css?v=flight-dashboard-replica-20261111d">
+    <script>
+      /* ONE build ID for cache busting (checked by tools/moduleUrlTest.js).
+         Modules import each other by plain relative paths; this import map
+         gives every live module a single versioned URL, so each file is
+         fetched and instantiated exactly once. Bump STARWARD_BUILD per release. */
+      window.STARWARD_BUILD = 'STARWARD-20261115-P4-A1';
+      window.STARWARD_MODULES = [
+        'js/camera.js',
+        'js/celestial/celestialBody.js',
+        'js/celestial/solarSystem.js',
+        'js/construction/budget.js',
+        'js/construction/buildGrid.js',
+        'js/construction/editor.js',
+        'js/construction/missionPresets.js',
+        'js/construction/missionSystems.js',
+        'js/construction/symmetry.js',
+        'js/flight/controls.js',
+        'js/flight/flightCameraProfile.js',
+        'js/flight/flightController.js',
+        'js/flight/guidance.js',
+        'js/flight/launchSite.js',
+        'js/game.js',
+        'js/main.js',
+        'js/map/mapRenderer.js',
+        'js/map/spaceMap.js',
+        'js/missions/missionDebrief.js',
+        'js/missions/missionManager.js',
+        'js/missions/missionOperations.js',
+        'js/physics/collision.js',
+        'js/physics/gravity.js',
+        'js/physics/orbitalMechanics.js',
+        'js/physics/physics.js',
+        'js/renderer.js',
+        'js/rocket/attachmentSystem.js',
+        'js/rocket/partDefinitions.js',
+        'js/rocket/partSprites.js',
+        'js/rocket/rocket.js',
+        'js/rocket/rocketPart.js',
+        'js/save/saveManager.js',
+        'js/trajectory/maneuverNode.js',
+        'js/trajectory/trajectoryPredictor.js',
+        'js/ui/buildUI.js',
+        'js/ui/flightUI.js',
+        'js/ui/mapUI.js'
+      ];
+      (function (build, modules) {
+        var v = '?v=' + encodeURIComponent(build);
+        var imports = {};
+        modules.forEach(function (m) {
+          imports[new URL(m, document.baseURI).href] = new URL(m + v, document.baseURI).href;
+        });
+        var map = document.createElement('script');
+        map.type = 'importmap';
+        map.textContent = JSON.stringify({imports: imports});
+        document.currentScript.after(map);
+        // Written while parsing so the stylesheets stay render-blocking.
+        var link = function (attrs) {
+          return '<link ' + Object.keys(attrs).map(function (k) {
+            return k + '=' + JSON.stringify(attrs[k]);
+          }).join(' ') + '>';
+        };
+        document.write(link({rel: 'icon', type: 'image/svg+xml', href: 'favicon.svg' + v}) +
+          link({rel: 'stylesheet', href: 'style.css' + v}) +
+          link({rel: 'stylesheet', href: 'css/flight-dashboard.css' + v}));
+      })(window.STARWARD_BUILD, window.STARWARD_MODULES);
+    </script>
     <!-- Dashboard layout anchors (docks, panels, mode gating) live in style.css. -->
   </head>
   <body data-ui-mode="build">
@@ -1089,7 +1152,16 @@
 <!-- ===================================================================
      SCRIPTS — ES module entry point
      =================================================================== -->
-    <script type="module" src="js/main.js?v=flight-dashboard-replica-20261111"></script>
+    <script>
+      // Entry module, versioned with the same build ID (import maps do not
+      // apply to <script src>, so it is added here).
+      (function () {
+        var entry = document.createElement('script');
+        entry.type = 'module';
+        entry.src = 'js/main.js?v=' + encodeURIComponent(window.STARWARD_BUILD);
+        document.body.appendChild(entry);
+      })();
+    </script>
   </body>
 </html>
 

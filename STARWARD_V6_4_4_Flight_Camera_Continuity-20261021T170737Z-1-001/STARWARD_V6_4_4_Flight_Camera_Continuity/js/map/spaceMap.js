@@ -2,7 +2,7 @@
    spaceMap.js — what you can click on the SYSTEM MAP, and how the camera
    frames it. Selection state lives on the game object.
    ========================================================================= */
-import {pickBody, mapPosition, compressRadius, discRadius, chromeInsets} from './mapRenderer.js?v=system-map-visual-20261023d';
+import {pickBody, mapPosition, compressRadius, discRadius, chromeInsets} from './mapRenderer.js';
 
 /** Body under the cursor (canvas pixels), or null. */
 export function selectBody(x, y, game) {

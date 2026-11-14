@@ -4,7 +4,7 @@
    ========================================================================= */
 import {formatDistance} from '../physics/orbitalMechanics.js';
 import {transferDeltaV} from '../physics/physics.js';
-import {bodyOrder, focusBody} from '../map/spaceMap.js?v=orbital-console-reference-20261023a';
+import {bodyOrder, focusBody} from '../map/spaceMap.js';
 
 function setText(sel, text) {
   const el = document.querySelector(sel);

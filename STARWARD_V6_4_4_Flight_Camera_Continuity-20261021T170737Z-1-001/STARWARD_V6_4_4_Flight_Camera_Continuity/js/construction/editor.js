@@ -7,7 +7,7 @@
 import {PART_DEFINITIONS as D} from '../rocket/partDefinitions.js';
 import {RocketPart} from '../rocket/rocketPart.js';
 import {attachmentSlots, snapPart} from '../rocket/attachmentSystem.js';
-import {buildPresetRocket} from './missionPresets.js?v=rocket-build-visual-fix-20261023a';
+import {buildPresetRocket} from './missionPresets.js';
 import {BuildGrid} from './buildGrid.js';
 import {DEFAULT_BUDGET, DEFAULT_PROFILE, profileById, partCost} from './budget.js';
 

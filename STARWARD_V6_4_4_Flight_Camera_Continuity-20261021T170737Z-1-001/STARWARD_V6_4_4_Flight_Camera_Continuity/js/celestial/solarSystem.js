@@ -1,4 +1,4 @@
-import {CelestialBody} from './celestialBody.js?v=system-map-20261022';
+import {CelestialBody} from './celestialBody.js';
 
 const G = 6.67430e-11;
 

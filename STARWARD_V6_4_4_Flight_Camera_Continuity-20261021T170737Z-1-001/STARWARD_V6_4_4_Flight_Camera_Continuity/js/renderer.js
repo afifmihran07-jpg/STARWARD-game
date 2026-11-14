@@ -6,13 +6,13 @@
      FLIGHT  the assembled vehicle flying over real terrain
      MAP     the solar system (mapRenderer.js)
    ========================================================================= */
-import {PART_DEFINITIONS as D} from './rocket/partDefinitions.js?v=ground-anchor-20261023d';
-import {METERS_PER_UNIT} from './rocket/rocket.js?v=starward-flight-realism-20261016-v644';
-import {terrainHeight} from './physics/collision.js?v=starward-flight-realism-20261016-v644';
-import {drawMap} from './map/mapRenderer.js?v=system-map-visual-20261023d';
-import {sheetImage, cellRect, packArt, packStatus, fitArtRect, contentRect} from './rocket/partSprites.js?v=starward-flight-realism-20261016-v644';
-import {combinePlanetReveal, atmosphereVisualProfile, rocketDisplayScale} from './flight/flightCameraProfile.js?v=starward-flight-realism-20261016-v644';
-import {resolveLaunchSite, launchPadMetrics} from './flight/launchSite.js?v=starward-flight-realism-20261016-v644';
+import {PART_DEFINITIONS as D} from './rocket/partDefinitions.js';
+import {METERS_PER_UNIT} from './rocket/rocket.js';
+import {terrainHeight} from './physics/collision.js';
+import {drawMap} from './map/mapRenderer.js';
+import {sheetImage, cellRect, packArt, packStatus, fitArtRect, contentRect} from './rocket/partSprites.js';
+import {combinePlanetReveal, atmosphereVisualProfile, rocketDisplayScale} from './flight/flightCameraProfile.js';
+import {resolveLaunchSite, launchPadMetrics} from './flight/launchSite.js';
 
 export const BUILD_PART_SCALE = 1.0;
 

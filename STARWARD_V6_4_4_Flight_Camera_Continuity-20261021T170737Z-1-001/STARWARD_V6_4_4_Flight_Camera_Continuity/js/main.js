@@ -1,6 +1,8 @@
-﻿import {Game} from './game.js?v=flight-dashboard-replica-20261111';
+﻿import {Game} from './game.js';
 
-const STARWARD_BUILD_ID = 'STARWARD-SYSTEM-MAP-20261022';
+// The one build ID lives in index.html (window.STARWARD_BUILD); it versions
+// every module, stylesheet and the favicon through the import map there.
+const STARWARD_BUILD_ID = window.STARWARD_BUILD || 'unversioned';
 window.__STARWARD_BUILD_ID = STARWARD_BUILD_ID;
 console.info('[STARWARD build]', STARWARD_BUILD_ID);
 
