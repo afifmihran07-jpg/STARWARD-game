@@ -24,7 +24,7 @@ import {
   downlinkMissionData, setScienceInstrument
 } from './missions/missionOperations.js';
 import {evaluateMissionDebrief} from './missions/missionDebrief.js';
-import {missionBreakdown, profileById, formatMoney} from './construction/budget.js';
+import {missionBreakdown, profileById, formatMoney, smallestProfileFor} from './construction/budget.js';
 import {TrajectoryPredictor} from './trajectory/trajectoryPredictor.js';
 import {ManeuverNode} from './trajectory/maneuverNode.js';
 import {MissionManager, MISSIONS} from './missions/missionManager.js';
@@ -334,9 +334,12 @@ export class Game {
     if (config.missionProfile) {
       setMissionProfile(config.missionProfile);
     }
+    // Fund the preset with the smallest budget class that covers its cost.
+    const funding = smallestProfileFor(missionBreakdown(this.editor.parts, rocket.stats()).total);
+    this.editor.setBudgetProfile(funding.id);
     updateBuildStats(rocket, this.editor);
     this.setMode('BUILD');
-    this.toast(`Loaded ${config.label} (100% readiness)`);
+    this.toast(`Loaded ${config.label} (100% readiness) · ${funding.name}-class budget (${formatMoney(funding.budget)})`);
   }
 
   /** Every build edit funnels through here so the read-outs stay in sync. */

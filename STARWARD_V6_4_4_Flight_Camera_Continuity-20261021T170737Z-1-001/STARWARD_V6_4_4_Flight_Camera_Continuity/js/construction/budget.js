@@ -114,6 +114,13 @@ export function profileById(id) {
          BUDGET_PROFILES.find(p => p.id === DEFAULT_PROFILE);
 }
 
+/** Smallest budget class whose cap covers a total cost (USD); the largest class
+ *  when nothing covers it. Used to fund a pre-built preset sensibly. */
+export function smallestProfileFor(total) {
+  const ordered = BUDGET_PROFILES.slice().sort((a, b) => a.budget - b.budget);
+  return ordered.find(p => total <= p.budget) || ordered[ordered.length - 1];
+}
+
 /** Default mission budget (USD) — the Discovery-class cap. */
 export const DEFAULT_BUDGET = profileById(DEFAULT_PROFILE).budget;
 

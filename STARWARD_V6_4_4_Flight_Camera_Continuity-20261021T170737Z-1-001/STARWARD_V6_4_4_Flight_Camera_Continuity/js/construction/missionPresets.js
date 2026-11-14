@@ -33,6 +33,9 @@ export const MISSION_PRESET_CONFIGS = {
     ],
     attachments: [
       {type: 'solarPanel', parentType: 'battery', sides: [-1, 1], align: 'center'},
+      // Comms Antenna on the probe core: the Earth-observation profile needs
+      // 1 comms point to downlink its imagery.
+      {type: 'antenna', parentType: 'probeCore', sides: [1], align: 'center'},
       {type: 'finSet', parentType: 'bigEngine', sides: [-1, 1], align: 'bottom'}
     ]
   },
@@ -115,6 +118,8 @@ export const MISSION_PRESET_CONFIGS = {
       'decoupler', 'mediumTank', 'mediumEngine'
     ],
     attachments: [
+      // Comms Antenna on the probe core: technology demos need 1 comms point.
+      {type: 'antenna', parentType: 'probeCore', sides: [1], align: 'center'},
       {type: 'finSet', parentType: 'mediumEngine', sides: [-1, 1], align: 'bottom'}
     ]
   }

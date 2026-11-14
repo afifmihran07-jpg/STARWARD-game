@@ -203,7 +203,37 @@ function stagedPreset(preset, altitudeKm) {
   eq(d.grade, 'COMPLETE SUCCESS', 'weather @700 km: complete success: ' + d.failures.join(' | '));
 }
 
-/* ---- 3. earthObservation as shipped: no antenna, so downlink is refused - */
+/* ---- 3a. A payload with no antenna: downlink is refused ---------------- */
+// (Originally exercised with the earthObservation preset, which shipped
+// without an antenna; Phase 3 A1 fitted one, so the refusal path is now
+// covered by an explicit antenna-less payload.)
+{
+  const g = makeGame();
+  const stack = ['noseCone', 'probeCore', 'science', 'battery', 'solarPanel', 'reactionWheel',
+    'decoupler', 'mediumTank', 'vacuumEngine', 'decoupler', 'largeTank', 'largeTank', 'bigEngine'];
+  const parts = []; let prev = null;
+  for (const t of stack) {
+    const s = prev ? attachmentSlots(t, prev, 0)[1] : {x: 0, y: 0};
+    const p = new RocketPart(t, s.x, s.y); parts.push(p); prev = p;
+  }
+  g.editor.parts = parts;
+  setMissionProfile('earthObservation');
+  g.launch();
+  const r = g.rocket, earth = r.body, R = earth.radius + 500000, v = Math.sqrt(earth.mu / R);
+  r.position = {x: earth.position.x, y: earth.position.y + R};
+  r.velocity = {x: earth.velocity.x - v, y: earth.velocity.y};
+  r.landed = false; r.hasFlown = true; r.throttle = 0; r.spool = 0;
+  run(g, 1);
+  ok(g.deployMission().ok, 'no antenna: deployment');
+  run(g, 120);
+  ok(g.missionOperations.dataStoredMB > 0, 'no antenna: science data accumulates');
+  const dl = g.downlinkMission();
+  eq(dl.ok, false, 'no antenna: downlink refused');
+  ok(/communications capability 0\/1/.test(dl.message), 'no antenna: refusal names the comms shortfall');
+  eq(g.evaluateMission().grade, 'PARTIAL SUCCESS', 'no antenna: partial, not complete');
+}
+
+/* ---- 3b. earthObservation preset (antenna fitted in A1) ---------------- */
 {
   const g = stagedPreset('earthObservation', 500);
   g.rocket.throttle = 0; run(g, 2);
@@ -211,9 +241,9 @@ function stagedPreset(preset, altitudeKm) {
   run(g, 120);
   ok(g.missionOperations.dataStoredMB > 0, 'earthObservation: science data accumulates');
   const dl = g.downlinkMission();
-  eq(dl.ok, false, 'earthObservation: downlink refused (preset has no antenna)');
-  ok(/communications capability 0\/1/.test(dl.message), 'earthObservation: refusal names the comms shortfall');
-  eq(g.evaluateMission().grade, 'PARTIAL SUCCESS', 'earthObservation: partial until an antenna is fitted');
+  ok(dl.ok, 'earthObservation: downlink succeeds with the fitted antenna: ' + (dl.message || ''));
+  const d = g.evaluateMission();
+  eq(d.grade, 'COMPLETE SUCCESS', 'earthObservation @500 km: complete: ' + d.failures.join(' | '));
 }
 
 /* ---- 4. Un-staged carrier with a separator below the payload ----------- */
