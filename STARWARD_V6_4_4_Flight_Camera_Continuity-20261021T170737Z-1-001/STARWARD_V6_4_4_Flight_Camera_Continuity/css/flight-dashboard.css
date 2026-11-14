@@ -668,7 +668,9 @@ body[data-ui-mode="flight"] #flightAbort.fh-abort:hover {
 /* ------------------------- scene labels --------------------------- */
 body[data-ui-mode="flight"] .flight-scene-label {
   position: fixed;
-  left: 3.6%;
+  /* Start right of the left panel column (16px + 214px + 24px padding +
+     gap) so the annotations never show through the mission/ops panels. */
+  left: 268px;
   z-index: 7;
   color: rgba(79,116,136,.62);
   font-family: var(--mono);
@@ -708,13 +710,14 @@ body[data-ui-mode="flight"] .flight-mission-toggle { left: 16px; bottom: 14px; }
   body[data-ui-mode="flight"] #throttle { width: 66px; }
   body[data-ui-mode="flight"] #missionPanel,
   body[data-ui-mode="flight"] #missionOpsPanel { width: 200px; }
+  body[data-ui-mode="flight"] .flight-scene-label { left: 254px; }
   /* The dock is wider than the free left gutter here; lift the toggle. */
   body[data-ui-mode="flight"] .flight-mission-toggle { bottom: 80px; }
 }
 @media (max-width: 900px) {
   body[data-ui-mode="flight"] .fh-card--telemetry { left: 9px; width: 190px; }
   body[data-ui-mode="flight"] .fh-right { right: 9px; width: 172px; }
-  body[data-ui-mode="flight"] .flight-scene-label { left: 9px; font-size: 7px; letter-spacing: .14em; }
+  body[data-ui-mode="flight"] .flight-scene-label { left: 237px; font-size: 7px; letter-spacing: .14em; }
   body[data-ui-mode="flight"] #missionPanel,
   body[data-ui-mode="flight"] #missionOpsPanel { left: 9px; width: 190px; }
   body[data-ui-mode="flight"] .flight-mission-toggle { left: 9px; }
@@ -737,6 +740,7 @@ body[data-ui-mode="flight"] .flight-mission-toggle { left: 16px; bottom: 14px; }
   body[data-ui-mode="flight"] #metrics .metric:first-child { padding-bottom: 10px; }
   body[data-ui-mode="flight"] #missionPanel { top: 232px; width: 168px; }
   body[data-ui-mode="flight"] #missionOpsPanel { top: 390px; width: 168px; }
+  body[data-ui-mode="flight"] .flight-scene-label { left: 215px; }
 }
 @media (max-width: 640px) {
   /* The dock wraps to two rows, so the toggle clears its top edge. */

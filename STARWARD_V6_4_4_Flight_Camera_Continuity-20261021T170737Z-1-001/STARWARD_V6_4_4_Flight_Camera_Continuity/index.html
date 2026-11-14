@@ -21,7 +21,7 @@
             <button data-mode="FLIGHT">FLIGHT</button>
             <button data-mode="MAP">SYSTEM MAP</button>
           </div>
-          <div class="map-top-status"><b><i></i> SYS NOMINAL</b><span>// EPOCH J2000 // UTC</span></div>
+          <div class="map-top-status"><b><i></i> SIMULATION</b><span>// 2D EDUCATIONAL MODEL</span></div>
         </div>
         <div class="actions ops-header-tools">
           <button id="newGame" title="Clear build and create a custom rocket">NEW CUSTOM</button>
@@ -246,12 +246,12 @@
       <section id="bodyFocusPanel" class="panel body-focus map-panel">
         <div class="map-rack-head">
           <span>TELEMETRY RACK // C-01</span>
-          <b><i></i> LINK NORMAL</b>
+          <b><i></i> LIVE STATE</b>
         </div>
         <div class="map-rack-readings" aria-label="System telemetry status">
-          <div><span>CORE RELAY</span><b>99.8% (DSN LOCK)</b></div>
-          <div><span>ATTITUDE ACS</span><b>FINE POINTING</b></div>
-          <div><span>HELIOCENTRIC REF</span><b>J2000 ECLIPTIC</b></div>
+          <div><span>VEHICLE</span><b id="rackVehicle">NO VEHICLE</b></div>
+          <div><span>PRIMARY BODY</span><b id="rackPrimary">—</b></div>
+          <div><span>REFERENCE FRAME</span><b>HELIOCENTRIC · 2D</b></div>
         </div>
         <button class="map-mode-readout" data-mode="BUILD" type="button"><b>01 // BUILD VEHICLE</b><span>DESIGN</span></button>
         <button class="map-mode-readout map-mode-readout--muted" data-mode="FLIGHT" type="button"><b>02 // FLIGHT TELEMETRY</b><span>LIVE</span></button>
@@ -274,19 +274,14 @@
         <dl class="body-stats" id="bodyStats"></dl>
         <p class="body-focus__orbit" id="plannedOrbit">No maneuver armed</p>
 
-        <div class="sysmap-eyebrow">AVIONICS CORE</div>
-        <div class="body-focus-status">
-          <span class="status-label">NOMINAL</span>
-          <span class="status-value">(99.4%)</span>
-        </div>
       </section>
 
       <!-- RIGHT: Astrodynamics / Maneuver Telemetry Panel -->
       <section id="mapInfo" class="panel map-info map-telemetry map-panel">
         <div class="ref-plane-row">
           <div class="ref-plane-label">REF PLANE</div>
-          <div class="ref-plane-value">ECLIPTIC J2000</div>
-          <div class="ref-plane-mode">HOHMANN LOCK</div>
+          <div class="ref-plane-value">HELIOCENTRIC 2D</div>
+          <div class="ref-plane-mode">HOHMANN EST.</div>
         </div>
 
         <div class="sysmap-eyebrow">ASTRODYNAMICS // MANEUVER HUD</div>
@@ -294,19 +289,19 @@
         <div class="map-telemetry-grid">
         <div class="telemetry-group">
           <span class="telemetry-label">TARGET BODY</span>
-          <span id="targetBodyName" class="telemetry-value mono">MARS (1.52 AU)</span>
+          <span id="targetBodyName" class="telemetry-value mono">—</span>
         </div>
         <div class="telemetry-group">
           <span class="telemetry-label">RELATIVE VELOCITY</span>
-          <span id="targetRelativeVelocity" class="telemetry-value mono">24.8 km/s</span>
+          <span id="targetRelativeVelocity" class="telemetry-value mono">—</span>
         </div>
         <div class="telemetry-group">
-          <span class="telemetry-label">REMAINING ΔV</span>
-          <span id="targetDeltaV" class="telemetry-value mono amber">840 m/s</span>
+          <span class="telemetry-label">PLANNED NODE ΔV</span>
+          <span id="targetDeltaV" class="telemetry-value mono amber">—</span>
         </div>
         <div class="telemetry-group">
-          <span class="telemetry-label">INTERCEPT ETA</span>
-          <span id="targetEta" class="telemetry-value mono">T-04:22:10</span>
+          <span class="telemetry-label">HOHMANN TRANSFER TIME</span>
+          <span id="targetEta" class="telemetry-value mono">—</span>
         </div>
         </div>
 
@@ -314,15 +309,15 @@
         <div class="map-node-readout">
         <div class="telemetry-group">
           <span class="telemetry-label">NEXT BURN</span>
-          <span id="nodeBurnName" class="telemetry-value mono">TCM-3 MIDCOURSE</span>
+          <span id="nodeBurnName" class="telemetry-value mono">—</span>
         </div>
         <div class="telemetry-group">
           <span class="telemetry-label">TIME TO BURN</span>
-          <span id="nodeTimeToBurn" class="telemetry-value mono">T-18h 42m 10s</span>
+          <span id="nodeTimeToBurn" class="telemetry-value mono">—</span>
         </div>
         <div class="telemetry-group">
           <span class="telemetry-label">ΔV</span>
-          <span id="nodeDeltaV" class="telemetry-value mono amber">44.2</span>
+          <span id="nodeDeltaV" class="telemetry-value mono amber">—</span>
         </div>
         </div>
         <div class="node-actions">
@@ -377,32 +372,32 @@
         <div class="bridge-divider"></div>
         <div class="bridge-group bridge-encounter">
           <span class="bridge-label">TARGET ENCOUNTER</span>
-          <span id="bridgeEncounter" class="bridge-value mono">MARS INTERCEPT (1.524 AU)</span>
+          <span id="bridgeEncounter" class="bridge-value mono">—</span>
         </div>
         <div class="bridge-divider"></div>
         <div class="bridge-group bridge-anomaly">
           <span class="bridge-label">TRUE ANOMALY</span>
-          <span id="bridgeAnomaly" class="bridge-value mono">138.4°</span>
+          <span id="bridgeAnomaly" class="bridge-value mono">—</span>
         </div>
         <div class="bridge-divider"></div>
         <div class="bridge-group bridge-refplane">
           <span class="bridge-label">REF PLANE</span>
-          <span id="bridgeRefPlane" class="bridge-value mono">ECLIPTIC J2000</span>
+          <span id="bridgeRefPlane" class="bridge-value mono">HELIOCENTRIC 2D</span>
         </div>
         <div class="bridge-divider"></div>
         <div class="bridge-group bridge-velocity">
           <span class="bridge-label">CRAFT VELOCITY</span>
-          <span id="bridgeVelocity" class="bridge-value mono">24.8 km/s</span>
+          <span id="bridgeVelocity" class="bridge-value mono">—</span>
         </div>
         <div class="bridge-divider"></div>
         <div class="bridge-group bridge-dv">
-          <span class="bridge-label">REMAINING ΔV</span>
-          <span id="bridgeDv" class="bridge-value mono amber">840 m/s</span>
+          <span class="bridge-label">PLANNED NODE ΔV</span>
+          <span id="bridgeDv" class="bridge-value mono amber">—</span>
         </div>
         <div class="bridge-divider"></div>
         <div class="bridge-group bridge-eta">
           <span class="bridge-label">ETA</span>
-          <span id="bridgeEta" class="bridge-value mono">T-04:22:10</span>
+          <span id="bridgeEta" class="bridge-value mono">—</span>
         </div>
       </section>
       <section id="buildStats" class="panel stats">

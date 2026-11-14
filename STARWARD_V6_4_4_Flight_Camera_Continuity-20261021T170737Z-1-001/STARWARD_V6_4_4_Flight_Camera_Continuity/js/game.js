@@ -24,6 +24,7 @@ import {
   downlinkMissionData, setScienceInstrument
 } from './missions/missionOperations.js';
 import {evaluateMissionDebrief} from './missions/missionDebrief.js';
+import {assessMission} from './construction/missionSystems.js';
 import {missionBreakdown, profileById, formatMoney, smallestProfileFor} from './construction/budget.js';
 import {TrajectoryPredictor} from './trajectory/trajectoryPredictor.js';
 import {ManeuverNode} from './trajectory/maneuverNode.js';
@@ -339,7 +340,9 @@ export class Game {
     this.editor.setBudgetProfile(funding.id);
     updateBuildStats(rocket, this.editor);
     this.setMode('BUILD');
-    this.toast(`Loaded ${config.label} (100% readiness) · ${funding.name}-class budget (${formatMoney(funding.budget)})`);
+    // Report the readiness the design actually scores for its profile.
+    const readiness = assessMission(this.editor.parts, rocket.stats(), getSelectedMissionProfile()).score;
+    this.toast(`Loaded ${config.label} (${readiness}% readiness) · ${funding.name}-class budget (${formatMoney(funding.budget)})`);
   }
 
   /** Every build edit funnels through here so the read-outs stay in sync. */

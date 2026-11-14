@@ -26,15 +26,20 @@ function flightStatus(game, alt, orbit) {
   if (game.deployedSpacecraft === r) return {text:'SPACECRAFT OPERATIONS', cls:'is-space'};
   if (isOrbitVerified(orbit, body, r)) return {text:'ORBIT VERIFIED · ENGINE CUTOFF', cls:'is-space'};
   if (r.activeEngine && !r.hasFlown && r.throttle <= 0.01) return {text:'ENGINES READY — PRESS SPACE TO IGNITE', cls:'is-warn'};
+  // Nothing produces thrust without a lit engine that still has propellant.
+  if (r.hasFlown && (!r.activeEngine || r.currentFuel <= 0)) return {text:'ENGINE OUT · NO ACTIVE STAGE', cls:'is-warn'};
   if (r.throttle <= 0.01 && (r.spool || 0) > 0.01) return {text:'ENGINE CUTOFF · THRUST TAILOFF', cls:'is-warn'};
   if (outsideAtmosphere && orbit && orbit.bound && orbit.periapsis <= body.radius + (body.atmosphere?.height || 0) + 10000) {
-    return {text: engineCutoff ? 'COASTING · SUBORBITAL' : 'ORBIT PREDICTED · BURN ACTIVE', cls:'is-warn'};
+    return {text: engineCutoff ? 'COASTING · SUBORBITAL' : 'BURN ACTIVE · PERIAPSIS IN ATMOSPHERE', cls:'is-warn'};
   }
   if (outsideAtmosphere && orbit && !Number.isFinite(orbit.apoapsis)) return {text:'SPACE · ESCAPE TRAJECTORY', cls:'is-space'};
   if (outsideAtmosphere && orbit && orbit.bound && !engineCutoff) return {text:'SPACE · BURN ACTIVE · ORBIT NOT VERIFIED', cls:'is-warn'};
   if (outsideAtmosphere) return {text:'SPACE COAST · ORBIT NOT VERIFIED', cls:'is-space'};
   if (engineCutoff && r.hasFlown) return {text:'COASTING · SUBORBITAL TRAJECTORY', cls:'is-warn'};
-  if (r.hasFlown) return {text:'POWERED ASCENT', cls:'is-good'};
+  // "Powered" only while the engines are actually producing thrust.
+  if (r.hasFlown) return (r.actualThrust || 0) > 0
+    ? {text:'POWERED ASCENT', cls:'is-good'}
+    : {text:'COASTING · SUBORBITAL TRAJECTORY', cls:'is-warn'};
   return {text:'PRELAUNCH', cls:'is-good'};
 }
 
@@ -133,15 +138,18 @@ export function updateFlightUI(game, orbit) {
     ];
 
   const essentialMetrics = new Set(['ALTITUDE', 'VELOCITY']);
-  const metricLabels = {ALTITUDE: 'ALTITUDE (ASL)'};
+  // The altitude card already carries a static "Altitude (ASL)" heading in
+  // index.html, so its headline metric is rendered without a second label.
+  const metricLabels = {ALTITUDE: ''};
   const renderMetric = ([k, v], splitValue = false) => {
-    const label = metricLabels[k] || k;
-    if (!splitValue) return '<div class="metric"><span>' + label + '</span><b>' + v + '</b></div>';
+    const label = k in metricLabels ? metricLabels[k] : k;
+    const labelHtml = label ? '<span>' + label + '</span>' : '';
+    if (!splitValue) return '<div class="metric">' + labelHtml + '<b>' + v + '</b></div>';
     // Headline rows split the unit so the dashboard can set it in small type.
     const match = /^([\d.,+\-]+)\s*(.+)$/.exec(String(v));
     const value = match ? match[1] : v;
     const unit = match ? match[2] : '';
-    return '<div class="metric"><span>' + label + '</span><b>' + value + '</b>' +
+    return '<div class="metric">' + labelHtml + '<b>' + value + '</b>' +
       (unit ? '<em>' + unit + '</em>' : '') + '</div>';
   };
   const metrics = document.querySelector('#metrics');

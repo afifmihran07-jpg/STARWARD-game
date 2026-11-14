@@ -320,8 +320,12 @@ export function transferDeltaV(r1, r2, mu) {
   if (!(r1 > 0) || !(r2 > 0) || mu <= 0) return null;
   const v1 = Math.sqrt(mu / r1);
   const v2 = Math.sqrt(mu / r2);
-  const at = (r1 + r2) / 2;
-  const burn1 = Math.abs(v1 * (Math.sqrt(2 * r2 / at) - 1));
-  const burn2 = Math.abs(v2 * (1 - Math.sqrt(2 * r1 / at)));
-  return {departure: burn1, arrival: burn2, total: burn1 + burn2, time: Math.PI * Math.sqrt((at ** 3) / (8 * mu))};
+  // Standard Hohmann relations with s = r1 + r2 (transfer semi-major axis s/2):
+  //   Δv1 = v1(√(2r2/s) − 1), Δv2 = v2(1 − √(2r1/s)), t = π√(s³/(8μ)).
+  // The previous code used the semi-major axis where s belongs, inflating
+  // Δv (Earth→Mars ≈16.5 km/s) and shortening the time by 2^1.5.
+  const s = r1 + r2;
+  const burn1 = Math.abs(v1 * (Math.sqrt(2 * r2 / s) - 1));
+  const burn2 = Math.abs(v2 * (1 - Math.sqrt(2 * r1 / s)));
+  return {departure: burn1, arrival: burn2, total: burn1 + burn2, time: Math.PI * Math.sqrt((s ** 3) / (8 * mu))};
 }

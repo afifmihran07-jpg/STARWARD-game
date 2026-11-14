@@ -171,15 +171,22 @@ export function updateBodyInfo(game) {
     setText('#targetBodyName', 'NO TARGET');
   }
 
+  // Hohmann transfer time between the vehicle's primary and the target, when
+  // both orbit the same parent (e.g. Earth -> Mars). Not an intercept ETA.
+  const transferTime = (() => {
+    const from = rocket ? rocket.body : null;
+    const to = game.target;
+    if (!from || !to || from === to || !from.orbit || !to.orbit || !from.parent || from.parent !== to.parent) return null;
+    const t = transferDeltaV(from.orbit.radius, to.orbit.radius, from.parent.mu);
+    return t ? t.time : null;
+  })();
+
   if (rocket && sun && game.target) {
+    // Velocities are m/s internally; display km/s.
     const rel = Math.hypot(rocket.velocity.x - game.target.velocity.x,
       rocket.velocity.y - game.target.velocity.y);
-    setText('#targetRelativeVelocity', rel.toFixed(1) + ' km/s');
-
-    const d = Math.hypot(rocket.position.x - game.target.position.x,
-      rocket.position.y - game.target.position.y);
-    setText('#targetEta', 'T-' + duration(d / Math.max(rel, 1)));
-
+    setText('#targetRelativeVelocity', (rel / 1000).toFixed(2) + ' km/s');
+    setText('#targetEta', transferTime ? duration(transferTime) : '—');
     setText('#targetDeltaV', Math.round(nodeDv) + ' m/s');
   } else {
     setText('#targetRelativeVelocity', '—');
@@ -197,11 +204,47 @@ export function updateBodyInfo(game) {
   if (rocket) {
     const speed = Math.hypot(rocket.velocity.x, rocket.velocity.y) / 1000;
     setText('#bridgeVelocity', speed.toFixed(1) + ' km/s');
+    const nu = trueAnomaly(rocket, rocket.body);
+    setText('#bridgeAnomaly', nu == null ? '—' : nu.toFixed(1) + '°');
+  } else {
+    setText('#bridgeVelocity', '—');
+    setText('#bridgeAnomaly', '—');
   }
+  setText('#bridgeEta', transferTime ? duration(transferTime) : '—');
   if (game.target) {
-    setText('#bridgeEncounter', game.target.name.toUpperCase() + ' INTERCEPT');
+    setText('#bridgeEncounter', 'TARGET · ' + game.target.name.toUpperCase());
     setText('#bridgeDv', (nodeDv ? Math.round(nodeDv) : '—') + ' m/s');
+  } else {
+    setText('#bridgeEncounter', 'NO TARGET');
+    setText('#bridgeDv', '—');
   }
+
+  // Telemetry rack: live vehicle state, not canned status text.
+  setText('#rackVehicle', !rocket ? 'NO VEHICLE'
+    : rocket.crashed ? 'DESTROYED'
+    : rocket.landed ? 'ON SURFACE'
+    : game.deployedSpacecraft ? 'SPACECRAFT DEPLOYED' : 'IN FLIGHT');
+  setText('#rackPrimary', rocket && rocket.body ? rocket.body.name.toUpperCase() : '—');
+}
+
+/** True anomaly (degrees) of the vehicle about its primary, or null when the
+ *  orbit is near-circular or unbound (where the angle is not meaningful). */
+function trueAnomaly(rocket, body) {
+  if (!body || !body.mu) return null;
+  const rx = rocket.position.x - body.position.x, ry = rocket.position.y - body.position.y;
+  const vx = rocket.velocity.x - body.velocity.x, vy = rocket.velocity.y - body.velocity.y;
+  const r = Math.hypot(rx, ry);
+  if (!(r > 0)) return null;
+  const v2 = vx * vx + vy * vy, rv = rx * vx + ry * vy;
+  // Eccentricity vector e = ((v² − μ/r)·r − (r·v)·v) / μ
+  const ex = ((v2 - body.mu / r) * rx - rv * vx) / body.mu;
+  const ey = ((v2 - body.mu / r) * ry - rv * vy) / body.mu;
+  const e = Math.hypot(ex, ey);
+  if (e < 1e-4 || e >= 1) return null;
+  const h = rx * vy - ry * vx;
+  let nu = Math.atan2((ex * ry - ey * rx) * Math.sign(h || 1), ex * rx + ey * ry) * 180 / Math.PI;
+  if (nu < 0) nu += 360;
+  return nu;
 }
 
 /** Build the clickable body focus list at the left panel (run once). */
