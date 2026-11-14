@@ -25,4 +25,19 @@ const wrongBody=evaluateMissionDebrief({profileId:'earthObservation',orbit:marsO
 assert.equal(wrongBody.targetOrbit,false); assert.ok(wrongBody.failures.some(x=>x.includes('requires an Earth orbit')));
 const lowPower=evaluateMissionDebrief({profileId:'earthObservation',orbit,body,spacecraftDeployed:true,operations:{...ops,systems:{comms:1,generation:0}}});
 assert.equal(lowPower.powerReady,false); assert.notEqual(lowPower.grade,'COMPLETE SUCCESS');
+// Phase 3 A4 (new cases): budget cap from launch.
+const withinCap=evaluateMissionDebrief({profileId:'earthObservation',orbit,body,spacecraftDeployed:true,operations:ops,budget:450e6,budgetCap:500e6});
+assert.equal(withinCap.grade,'COMPLETE SUCCESS','within the cap a flawless mission is still complete'); assert.equal(withinCap.withinBudget,true);
+assert.ok(!withinCap.failures.some(x=>x.includes('budget cap')),'no budget failure when within the cap');
+const atCap=evaluateMissionDebrief({profileId:'earthObservation',orbit,body,spacecraftDeployed:true,operations:ops,budget:500e6,budgetCap:500e6});
+assert.equal(atCap.grade,'COMPLETE SUCCESS','exactly at the cap is within budget');
+const overCap=evaluateMissionDebrief({profileId:'earthObservation',orbit,body,spacecraftDeployed:true,operations:ops,budget:578e6,budgetCap:500e6});
+assert.equal(overCap.grade,'PARTIAL SUCCESS','over the cap cannot be COMPLETE SUCCESS'); assert.equal(overCap.withinBudget,false);
+assert.ok(overCap.failures.some(x=>x.includes('exceeds')&&x.includes('budget cap')),'over-cap failure line');
+assert.ok(overCap.recommendations.some(x=>x.toLowerCase().includes('budget class')),'over-cap recommendation');
+const overCapCrash=evaluateMissionDebrief({profileId:'earthObservation',orbit:null,body,spacecraftDeployed:false,crashed:true,operations:ops,budget:578e6,budgetCap:500e6});
+assert.equal(overCapCrash.grade,'MISSION FAILURE','budget does not upgrade a failure');
+const noCap=evaluateMissionDebrief({profileId:'earthObservation',orbit,body,spacecraftDeployed:true,operations:ops,budget:9e9});
+assert.equal(noCap.grade,'COMPLETE SUCCESS','no cap supplied: budget is not judged');
+console.log('A4: 11 budget checks passed: within/at/over cap, failure line, recommendation, no upgrade of failures, unknown cap');
 console.log('16 checks passed: complete/partial/failure grading, Earth-specific target orbit, power requirement, science and communications downlink dependencies, crash handling and destination honesty');
