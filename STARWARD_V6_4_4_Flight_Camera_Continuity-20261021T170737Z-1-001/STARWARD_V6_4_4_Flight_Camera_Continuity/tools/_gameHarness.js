@@ -64,6 +64,7 @@ export function makeGame(options = {}) {
     missionOperations: null, deployedSpacecraft: null, spacecraftOrbit: null, missionLaunchRecord: null,
     opsAccum: 0, seededTestOrbit: false
   }, options);
+  g.camera.canvas = Object.assign(g.canvas, {clientWidth: g.canvas.width, clientHeight: g.canvas.height});
   g.selected = g.bodies[1];
   g.toasts = [];
   g.toast = msg => { g.toasts.push(msg); };

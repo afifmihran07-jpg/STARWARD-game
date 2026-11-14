@@ -25,7 +25,7 @@ import {
 } from './missions/missionOperations.js';
 import {evaluateMissionDebrief} from './missions/missionDebrief.js';
 import {assessMission} from './construction/missionSystems.js';
-import {missionBreakdown, profileById, formatMoney, smallestProfileFor} from './construction/budget.js';
+import {missionBreakdown, profileById, formatMoney, smallestProfileFor, budgetLevel} from './construction/budget.js';
 import {TrajectoryPredictor} from './trajectory/trajectoryPredictor.js';
 import {ManeuverNode} from './trajectory/maneuverNode.js';
 import {MissionManager, MISSIONS} from './missions/missionManager.js';
@@ -609,6 +609,15 @@ export class Game {
     }
     if (!rocket.engines.length) {
       this.toast('No engine fitted — the vehicle cannot fly');
+      return;
+    }
+    // The budget is enforced here, so every route into flight (LAUNCH, the
+    // FLIGHT tab, the M key, LAUNCH TO SELECTED, loading a save) obeys it.
+    const funding = profileById(this.editor.budgetProfile);
+    const cost = missionBreakdown(this.editor.parts, rocket.stats()).total;
+    if (budgetLevel(cost, funding.budget).key === 'over') {
+      this.toast('Over budget by ' + formatMoney(cost - funding.budget) + ' (' + formatMoney(cost) + ' vs ' +
+        funding.name + ' cap ' + formatMoney(funding.budget) + ') — raise the budget class or trim the design');
       return;
     }
 
