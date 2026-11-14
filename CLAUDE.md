@@ -1,0 +1,1 @@
+The STARWARD game lives in STARWARD_V6_4_4_Flight_Camera_Continuity-20261021T170737Z-1-001/STARWARD_V6_4_4_Flight_Camera_Continuity/ — follow its rules: @STARWARD_V6_4_4_Flight_Camera_Continuity-20261021T170737Z-1-001/STARWARD_V6_4_4_Flight_Camera_Continuity/CLAUDE.md
