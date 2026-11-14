@@ -1665,7 +1665,7 @@ export class Renderer {
     ];
     if (r) {
       lines.push('mass ' + (r.mass / 1000).toFixed(2) + ' t   fuel ' + r.fuel.toFixed(0) + ' kg   stage ' +
-        (r.stageIndex + 1) + '/' + r.groups.length + '   throttle ' + (r.throttle * 100).toFixed(0) + '%');
+        r.stageNumber + '/' + r.totalStages + '   throttle ' + (r.throttle * 100).toFixed(0) + '%');
       lines.push('accel ' + Math.hypot(r.acceleration.x, r.acceleration.y).toFixed(2) + ' m/s²   angle ' +
         (r.angle * 180 / Math.PI).toFixed(0) + '°   primary ' + r.body.name);
     }

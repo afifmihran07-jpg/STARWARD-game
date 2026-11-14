@@ -67,6 +67,8 @@ export class Rocket {
     this.guidanceMaxG = 4.0;
     this.ispEff = 0;
     this.stageIndex = -1;
+    /** Stage groups already dropped (for the "STAGE n / N" read-outs). */
+    this.stagesJettisoned = 0;
     this.crashed = false;
     this.landed = false;
     this.stageFuel = [];
@@ -228,18 +230,79 @@ export class Rocket {
     this.ispEff = this._activeEngine ? this._activeEngine.isp : 0;
   }
 
-  /** Light the next stage; everything below it is jettisoned. */
+  /**
+   * True when SPACE can do something useful: ignite the first stage, or
+   * separate to a further group that still carries an engine. Engineless
+   * groups above the last propulsive stage are the payload: they stay
+   * attached until the player explicitly deploys them.
+   */
+  canStage() {
+    if (this.stageIndex < 0) return this.groups.length > 0;
+    const next = this.stageIndex + 1;
+    return next < this.groups.length &&
+      this.groups.slice(next).some(g => g.some(isEngine));
+  }
+
+  /** The lit stage is the last propulsive one and an engineless payload sits above it. */
+  get payloadAttached() {
+    return this.stageIndex >= 0 && this.stageIndex + 1 < this.groups.length && !this.canStage();
+  }
+
+  /** 1-based number of the lit stage in the original stack (0 before ignition). */
+  get stageNumber() {
+    return this.stageIndex >= 0 ? (this.stagesJettisoned || 0) + this.stageIndex + 1 : 0;
+  }
+
+  /** Stage count of the original stack, including stages already jettisoned. */
+  get totalStages() {
+    return (this.stagesJettisoned || 0) + Math.max(1, this.groups.length);
+  }
+
+  /**
+   * Light the next stage; everything below it is jettisoned.
+   *
+   * The surviving parts are re-grouped by refresh(), which numbers the groups
+   * from 0 again — so the newly lit stage is always local group 0 afterwards.
+   * stageIndex is reset to 0 and the surviving stages keep their own
+   * propellant (previously the old index was kept, which skipped a stage and
+   * stranded its fuel on every separation after the first).
+   */
   nextStage() {
-    if (this.stageIndex >= this.groups.length - 1) return null;
-    this.stageIndex += 1;
+    if (!this.canStage()) return null;
+    if (this.stageIndex < 0) {
+      // Ignition: nothing is jettisoned.
+      this.stageIndex = 0;
+      this._activeEngine = this._summarise(0);
+      return this.groups[0] || null;
+    }
+    const next = this.stageIndex + 1;
     const keep = new Set();
-    for (let i = this.stageIndex; i < this.groups.length; i++) {
+    for (let i = next; i < this.groups.length; i++) {
       for (const p of this.groups[i]) keep.add(p.id);
     }
+    const survivingFuel = this.stageFuel.slice(next);
     this.parts = this.parts.filter(p => keep.has(p.id));
-    const lit = this.groups[this.stageIndex];
+    this.stagesJettisoned = (this.stagesJettisoned || 0) + next;
+    this.stageIndex = 0;
     this.refresh();
-    return lit || null;
+    // The survivors are the same groups in the same order, so their tanks
+    // carry over one-for-one — never refilled, never lost.
+    this.stageFuel = this.stageCapacity.map((cap, i) =>
+      Math.max(0, Math.min(cap, survivingFuel[i] ?? cap)));
+    return this.groups[0] || null;
+  }
+
+  /**
+   * Log a separation that has just happened (call right after nextStage()
+   * succeeded on an already-lit vehicle). Arms the next-stage ignition event,
+   * which stepRocket records once the new engines actually spool up.
+   */
+  recordStageSeparation(fromStage, trigger = 'MANUAL', altitude = null) {
+    this.flightEvents = this.flightEvents || [];
+    this.flightEvents.push({type:'STAGE_SEPARATION', time:this.flightElapsed || 0, altitude,
+      fromStage, toStage:this.stageNumber, separationImpulse:0, trigger});
+    this.flightPhase = 'STAGE_SEPARATION';
+    if (this.activeEngine) this._stageIgnitionPending = true;
   }
 
   /** Spend propellant from the lit stage. */
@@ -255,18 +318,30 @@ stats() {
     const mass = this.mass;
     const dry = this.dryMass;
 
-    // Stage-by-stage rocket equation: each stage spends its own tanks.
+    // Sequential (Tsiolkovsky) rocket equation, one stage at a time and in
+    // firing order: each stage burns its own *remaining* propellant while
+    // carrying everything above it, then its whole group — leftover
+    // propellant and dry structure, engines and decoupler — is dropped before
+    // the next stage lights. Ideal vacuum Δv using each engine's rated Isp.
+    // Starts at the lit stage in flight, so it is also the remaining Δv.
     let dv = 0;
     let remaining = mass;
-    for (const group of this.groups) {
+    const stageDv = [];
+    for (let i = Math.max(0, this.stageIndex); i < this.groups.length; i++) {
+      const group = this.groups[i];
       const lit = group.filter(isEngine).map(p => D[p.type]);
-      const fuel = group.reduce((s, p) => s + propellant(p), 0);
-      if (!lit.length || fuel <= 0) continue;
-      const stageThrust = lit.reduce((s, e) => s + e.thrust, 0);
-      const isp = lit.reduce((s, e) => s + e.thrust * e.isp, 0) / stageThrust;
-      const after = remaining - fuel;
-      if (after > 0) dv += isp * 9.80665 * Math.log(remaining / after);
-      remaining = after;
+      const fuel = Math.max(0, this.stageFuel[i] ?? group.reduce((s, p) => s + propellant(p), 0));
+      const groupDry = group.reduce((s, p) => s + D[p.type].mass, 0);
+      let stage = 0;
+      if (lit.length && fuel > 0) {
+        const stageThrust = lit.reduce((s, e) => s + e.thrust, 0);
+        const isp = lit.reduce((s, e) => s + e.thrust * e.isp, 0) / stageThrust;
+        const after = remaining - fuel;
+        if (after > 0) stage = isp * 9.80665 * Math.log(remaining / after);
+      }
+      stageDv.push(stage);
+      dv += stage;
+      remaining -= fuel + groupDry;
     }
 
     return {
@@ -275,6 +350,7 @@ stats() {
       fuel: this.fuel,
       fuelCapacity: this.fuelCapacity,
       dv,
+      stageDv,
       twr: mass ? thrust / (mass * 9.81) : 0,
       thrust,
       stages: Math.max(1, this.groups.length),

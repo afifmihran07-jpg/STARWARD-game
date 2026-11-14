@@ -619,9 +619,20 @@ export class Game {
   stage() {
     const rocket = this.rocket;
     if (!rocket || rocket.crashed) return;
+    const wasLit = rocket.stageIndex >= 0;
+    const fromStage = rocket.stageNumber;
     const lit = rocket.nextStage();
+    // A manual separation is logged just like an automatic one (ignition
+    // from the pad is not a separation).
+    if (lit && wasLit) {
+      rocket.recordStageSeparation(fromStage, 'MANUAL',
+        rocket.body ? rocket.altitudeAboveSurface(rocket.body) : null);
+    }
     if (!lit) {
-      this.toast('All stages used');
+      // The engineless payload stays attached until it is explicitly deployed.
+      this.toast(rocket.payloadAttached
+        ? 'Final stage lit — payload stays attached until DEPLOY SPACECRAFT'
+        : 'All stages used');
       return;
     }
     this.predictor.last = 0;
@@ -852,7 +863,7 @@ export class Game {
         ' m/s (rel)   mass ' + (r.mass / 1000).toFixed(2) + ' t');
       lines.push('screen    ship ' + shipScreen.x.toFixed(0) + ',' + shipScreen.y.toFixed(0) +
         '   ground ' + groundScreen.x.toFixed(0) + ',' + groundScreen.y.toFixed(0));
-      lines.push('stage     ' + (r.stageIndex + 1) + '/' + r.groups.length + '   fuel ' +
+      lines.push('stage     ' + r.stageNumber + '/' + r.totalStages + '   fuel ' +
         r.currentFuel.toFixed(0) + '/' + r.currentCapacity.toFixed(0) + ' kg   angle ' +
         (r.angle * 180 / Math.PI).toFixed(0) + '°' +
         (r.crashed ? '   CRASHED' : '') + (r.landed ? '   LANDED' : ''));

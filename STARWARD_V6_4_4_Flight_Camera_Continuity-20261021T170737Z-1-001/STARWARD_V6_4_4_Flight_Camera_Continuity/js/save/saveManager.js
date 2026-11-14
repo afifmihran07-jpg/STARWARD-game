@@ -10,6 +10,7 @@ export const SaveManager = {
         angle: game.rocket.angle,
         stageIndex: game.rocket.stageIndex,
         stageFuel: game.rocket.stageFuel,
+        stagesJettisoned: game.rocket.stagesJettisoned || 0,
         throttle: game.rocket.throttle,
         bodyId: game.rocket.body?.id,
         landed: game.rocket.landed,
@@ -34,6 +35,8 @@ export const SaveManager = {
         game.rocket.stageIndex = -1;
         game.rocket.refresh();
         game.rocket.stageIndex = Number.isInteger(saved.stageIndex) ? saved.stageIndex : -1;
+        // Display-only counter of dropped stages; older saves default to 0.
+        game.rocket.stagesJettisoned = Number.isInteger(saved.stagesJettisoned) ? Math.max(0, saved.stagesJettisoned) : 0;
         game.rocket.refresh();
         if (Array.isArray(saved.stageFuel)) {
           game.rocket.stageFuel = game.rocket.stageCapacity.map((cap, i) => Math.max(0, Math.min(cap, Number(saved.stageFuel[i] ?? cap))));

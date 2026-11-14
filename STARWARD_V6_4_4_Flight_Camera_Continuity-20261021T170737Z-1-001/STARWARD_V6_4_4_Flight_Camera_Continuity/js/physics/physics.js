@@ -33,6 +33,12 @@ function speedOfSoundAtAltitude(body, altitude) {
   return 340 * Math.sqrt(fraction);
 }
 
+/** Absolute 1-based stage number. stageIndex is local to the groups still
+ * attached (the lit stage is group 0 after a separation), so events use this. */
+function stageNumberOf(rocket) {
+  return Number.isFinite(rocket.stageNumber) ? rocket.stageNumber : (rocket.stageIndex + 1);
+}
+
 export function stepRocket(rocket, bodies, dt) {
   if (!rocket.primaryBody) rocket.primaryBody = findPrimaryBody(rocket, bodies);
   if (rocket.crashed) return;
@@ -98,7 +104,7 @@ export function stepRocket(rocket, bodies, dt) {
   rocket.ispEff = ispEff;
   if (rocket._stageIgnitionPending && rocket.spool > 0.1 && engine) {
     rocket.flightEvents = rocket.flightEvents || [];
-    rocket.flightEvents.push({type:'NEXT_STAGE_IGNITION', time:rocket.flightElapsed, altitude:alt, stageIndex:rocket.stageIndex});
+    rocket.flightEvents.push({type:'NEXT_STAGE_IGNITION', time:rocket.flightElapsed, altitude:alt, stageIndex:rocket.stageIndex, stage:stageNumberOf(rocket)});
     rocket._stageIgnitionPending = false;
     rocket.flightPhase = 'POWERED_ASCENT';
   }
@@ -122,12 +128,13 @@ export function stepRocket(rocket, bodies, dt) {
       // Stage changes are physical state changes; the remaining stage continues
       // from the same position/velocity (the model has no separation impulse).
       const priorStage = rocket.stageIndex;
+      const priorStageNumber = stageNumberOf(rocket);
       if (!rocket.crashed && !rocket.landed) {
         const lit = rocket.nextStage();
         if (lit) {
           rocket.flightEvents = rocket.flightEvents || [];
           rocket.flightEvents.push({type:'STAGE_SEPARATION', time:rocket.flightElapsed, altitude:alt,
-            fromStage:priorStage + 1, toStage:rocket.stageIndex + 1, separationImpulse:0});
+            fromStage:priorStageNumber, toStage:stageNumberOf(rocket), separationImpulse:0});
           rocket.flightPhase = 'STAGE_SEPARATION';
           if (rocket.activeEngine && !rocket.landed) {
             rocket.throttle = 1; // automatic staging commands the next engine to light
@@ -136,7 +143,7 @@ export function stepRocket(rocket, bodies, dt) {
         } else {
           rocket.flightPhase = 'ENGINE_CUTOFF';
           rocket.flightEvents = rocket.flightEvents || [];
-          rocket.flightEvents.push({type:'ENGINE_CUTOFF', time:rocket.flightElapsed, altitude:alt, reason:'PROPELLANT_DEPLETED', stageIndex:priorStage});
+          rocket.flightEvents.push({type:'ENGINE_CUTOFF', time:rocket.flightElapsed, altitude:alt, reason:'PROPELLANT_DEPLETED', stageIndex:priorStage, stage:priorStageNumber});
         }
       }
     }
@@ -265,9 +272,9 @@ export function stepRocket(rocket, bodies, dt) {
   }
 
   if (rocket._engineWasProducing && rocket.actualThrust <= 0.005 && rocket.throttle <= 0.005 &&
-      (rocket.spool || 0) <= 0.01 && !(rocket.flightEvents || []).some(e => e.type === 'ENGINE_CUTOFF' && e.stageIndex === rocket.stageIndex)) {
+      (rocket.spool || 0) <= 0.01 && !(rocket.flightEvents || []).some(e => e.type === 'ENGINE_CUTOFF' && (e.stage ?? e.stageIndex + 1) === stageNumberOf(rocket))) {
     rocket.flightEvents = rocket.flightEvents || [];
-    rocket.flightEvents.push({type:'ENGINE_CUTOFF', time:rocket.flightElapsed, altitude:primary.altitude(rocket.position), reason:'COMMAND_OR_THRUST_TAILOFF', stageIndex:rocket.stageIndex});
+    rocket.flightEvents.push({type:'ENGINE_CUTOFF', time:rocket.flightElapsed, altitude:primary.altitude(rocket.position), reason:'COMMAND_OR_THRUST_TAILOFF', stageIndex:rocket.stageIndex, stage:stageNumberOf(rocket)});
     rocket.flightPhase = 'ENGINE_CUTOFF';
   }
   rocket._engineWasProducing = rocket.actualThrust > 0.005;

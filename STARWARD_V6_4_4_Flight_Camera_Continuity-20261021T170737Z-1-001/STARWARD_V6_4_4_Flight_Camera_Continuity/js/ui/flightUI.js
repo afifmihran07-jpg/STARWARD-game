@@ -3,22 +3,17 @@
    ========================================================================= */
 import {formatDistance, isOrbitVerified} from '../physics/orbitalMechanics.js';
 
-const G0 = 9.80665;
-
 function setText(sel, text) {
   const el = document.querySelector(sel);
   if (el) el.textContent = text;
 }
 
-/** Delta-v the remaining propellant can still buy. */
-function remainingDv(rocket) {
-  const isp = rocket.activeEngine
-    ? rocket.activeEngine.isp
-    : (rocket.engines.length ? Math.max(...rocket.engines.map(e => e.isp)) : 0);
-  if (!isp) return 0;
-  const wet = rocket.mass;
-  const dry = Math.max(1, rocket.mass - rocket.fuel);
-  return isp * G0 * Math.log(wet / dry);
+/** Delta-v the remaining propellant can still buy: the same stage-by-stage
+ *  rocket equation as the builder, starting at the lit stage, so propellant in
+ *  unlit upper stages is credited to *their* engines and dropped dry mass is
+ *  not carried. */
+function remainingDv(rocket, stats = rocket.stats()) {
+  return stats.dv || 0;
 }
 
 function flightStatus(game, alt, orbit) {
@@ -127,8 +122,8 @@ export function updateFlightUI(game, orbit) {
       ['MASS', (r.mass / 1000).toFixed(2) + ' t'],
       ['THRUST', isSpacecraft ? 'N/A' : actualThrust >= 1000 ? (actualThrust / 1000).toFixed(0) + ' kN' : actualThrust.toFixed(0) + ' N'],
       ['TWR', isSpacecraft ? 'N/A' : r.activeEngine ? twr.toFixed(2) : (r.mass ? (st.thrust / (r.mass * localGravity)).toFixed(2) : '—')],
-      ['ΔV LEFT', isSpacecraft ? 'N/A' : Math.round(remainingDv(r)) + ' m/s'],
-      ['STAGE', isSpacecraft ? 'DEPLOYED' : (r.stageIndex + 1) + ' / ' + st.stages],
+      ['ΔV LEFT', isSpacecraft ? 'N/A' : Math.round(remainingDv(r, st)) + ' m/s'],
+      ['STAGE', isSpacecraft ? 'DEPLOYED' : r.stageNumber + ' / ' + r.totalStages],
       ['SAS', r.sas ? 'ON [T]' : 'OFF [T]'],
       ['GUIDANCE', r.autoGuidance ? 'AUTO GRAVITY TURN [G]' : 'MANUAL [G]'],
       ['FLIGHT PHASE', phaseLabels[r.flightPhase] || r.flightPhase || 'ASCENT'],
@@ -213,10 +208,10 @@ export function updateFlightUI(game, orbit) {
   if (stageBtn) {
     const stageLine = document.querySelector('#stageLine');
     const stageAction = document.querySelector('#stageAction');
-    const stageNumber = Math.min(Math.max(1, r.stageIndex + 1), st.stages);
+    const stageNumber = Math.min(Math.max(1, r.stageNumber), r.totalStages);
     if (stageLine) stageLine.textContent = isSpacecraft ? 'SPACECRAFT' : 'STAGE ' + stageNumber;
-    if (stageAction) stageAction.textContent = isSpacecraft ? 'DEPLOYED' : 'SEPARATION';
-    stageBtn.disabled = isSpacecraft || r.stageIndex >= st.stages - 1;
+    if (stageAction) stageAction.textContent = isSpacecraft ? 'DEPLOYED' : r.payloadAttached ? 'PAYLOAD ATTACHED' : 'SEPARATION';
+    stageBtn.disabled = isSpacecraft || !r.canStage();
   }
 
   // Camera framing presets reuse the flight zoom the wheel already drives.
