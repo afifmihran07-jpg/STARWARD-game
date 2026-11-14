@@ -82,10 +82,25 @@ check('starter design fits the default Discovery budget', () => {
   const editor = new Editor();
   editor.loadStarter();
   const bd = missionBreakdown(editor.parts);
-  assert.ok(bd.total > 200e6, 'starter total too low: ' + formatMoney(bd.total));
+  // Floor lowered from $200M to $100M (approved, Phase 3 decision 4): a
+  // player-built launcher is no longer also billed a commercial launch fee.
+  assert.ok(bd.total > 100e6, 'starter total too low: ' + formatMoney(bd.total));
   assert.ok(bd.total < DEFAULT_BUDGET,
     'starter total ' + formatMoney(bd.total) + ' exceeds the $500M cap');
   assert.notStrictEqual(budgetLevel(bd.total, DEFAULT_BUDGET).key, 'over');
+});
+
+check('own launcher: no commercial launch fee; external launch keeps list prices', () => {
+  const editor = new Editor();
+  editor.loadStarter();
+  const own = missionBreakdown(editor.parts);
+  assert.strictEqual(own.launch, 0, 'player-built launcher is not billed a launch');
+  assert.strictEqual(own.launchVehicle, 'Own launch vehicle');
+  assert.ok(own.lines.some(l => l.id === 'launch' && l.value === 0), 'launch line shown at $0');
+  const ext = missionBreakdown(editor.parts, null, {externalLaunch: true});
+  assert.strictEqual(ext.launch, launchServices(ext.mass).cost, 'external launch uses the vehicle ladder');
+  assert.ok(ext.total > own.total, 'buying a launch costs more');
+  assert.strictEqual(ext.hardware, own.hardware, 'hardware is costed the same either way');
 });
 
 check('budget states transition ok → watch → critical → over', () => {

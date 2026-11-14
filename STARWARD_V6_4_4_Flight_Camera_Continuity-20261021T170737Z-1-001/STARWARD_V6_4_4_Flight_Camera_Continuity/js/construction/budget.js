@@ -155,11 +155,16 @@ export function propellantCost(fuelKg) {
  * @param {Array}  parts  the editor's parts list.
  * @param {object} stats  optional rocket.stats() (mass/fuel), derived from
  *                        the parts list when absent.
+ * @param {object} options {externalLaunch}: buy a commercial launch for the
+ *                        stack (real list prices). Default false: the player
+ *                        builds and flies the launcher, whose hardware and
+ *                        propellant are already costed, so no launch fee is
+ *                        added on top.
  * @returns {object} {lines, hardwareByCategory, hardware, propellant,
  *                    launch, ops, sep, contingency, reserve, total,
  *                    fuel, mass, launchVehicle}
  */
-export function missionBreakdown(parts, stats) {
+export function missionBreakdown(parts, stats, options = {}) {
   parts = parts || [];
 
   // --- 1. Flight hardware, split by subsystem ---------------------------
@@ -184,8 +189,14 @@ export function missionBreakdown(parts, stats) {
   // --- 2. Propellant & fluids ------------------------------------------
   const propellant = propellantCost(fuel);
 
-  // --- 3. Launch services (real vehicle ladder) -------------------------
-  const launchInfo = launchServices(parts.length ? mass : 0);
+  // --- 3. Launch services ---------------------------------------------
+  // The player's own rocket is the launcher: charging a commercial launch
+  // as well would bill the same flight twice. An external launch keeps the
+  // real vehicle ladder.
+  const launchInfo = options.externalLaunch
+    ? launchServices(parts.length ? mass : 0)
+    : {cost: 0, vehicle: 'Own launch vehicle',
+       source: 'player-built launcher — its hardware and propellant are costed above'};
 
   // --- 4. Mission operations (12% of hardware + propellant) -------------
   const ops = Math.round(OPS_RATE * (hardware + propellant));
