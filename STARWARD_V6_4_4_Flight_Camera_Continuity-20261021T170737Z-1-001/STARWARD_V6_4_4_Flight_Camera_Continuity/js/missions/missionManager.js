@@ -6,6 +6,13 @@
    ========================================================================= */
 const clamp01 = v => Math.max(0, Math.min(1, v));
 
+/** Lunar Crossing: arrive within this distance of the Moon's centre (m). */
+export const LUNAR_CROSSING_DISTANCE = 40000e3;
+/** Earth–Moon mean distance (m), the start of the Lunar Crossing progress bar. */
+const EARTH_MOON_DISTANCE = 384400e3;
+/** Homeward: the flight must first have reached space (m above the surface). */
+export const HOMEWARD_MIN_PEAK = 100e3;
+
 export const MISSIONS = [
   {
     id: 'altitude', name: 'Altitude Trial', objective: 'Reach an altitude of 10 km.',
@@ -20,10 +27,12 @@ export const MISSIONS = [
     hint: st => Math.max(0, (st.periapsis - st.primaryRadius) / 1000).toFixed(0) + ' / 100 km periapsis'
   },
   {
-    id: 'moon', name: 'Lunar Crossing', objective: 'Close to 384 400 km from Earth.',
-    progress: st => clamp01(1 - (st.earthDistance - 40000) / 344400),
-    done: st => st.earthDistance <= 40000,
-    hint: st => Math.round(st.earthDistance / 1000).toLocaleString() + ' km from Earth'
+    // Distances are metres. The old check compared Earth-centre distance with
+    // 40000 (40 km — inside the Earth), so it could never complete.
+    id: 'moon', name: 'Lunar Crossing', objective: 'Fly to within 40 000 km of the Moon.',
+    progress: st => clamp01((EARTH_MOON_DISTANCE - st.moonDistance) / (EARTH_MOON_DISTANCE - LUNAR_CROSSING_DISTANCE)),
+    done: st => st.moonDistance <= LUNAR_CROSSING_DISTANCE,
+    hint: st => Math.round(st.moonDistance / 1000).toLocaleString() + ' km from the Moon'
   },
   {
     id: 'landing', name: 'Moon Landing', objective: 'Touch down on the Moon below 15 m/s.',
@@ -32,10 +41,17 @@ export const MISSIONS = [
     hint: st => (st.onMoon ? (st.landed ? 'landed at ' + st.speed.toFixed(0) + ' m/s' : 'over the Moon') : 'not at the Moon')
   },
   {
-    id: 'return', name: 'Homeward', objective: 'Come back down on Earth.',
-    progress: st => clamp01(st.earthDistance / 400000),
-    done: st => st.onEarth && st.landed,
-    hint: st => Math.round(st.earthDistance / 1000).toLocaleString() + ' km from Earth'
+    // A landing only counts after the flight has been above 100 km; sitting
+    // on the pad used to complete this mission.
+    id: 'return', name: 'Homeward', objective: 'Reach space (above 100 km), then land back on Earth.',
+    progress: st => st.maxAltitude < HOMEWARD_MIN_PEAK
+      ? 0.5 * clamp01(st.maxAltitude / HOMEWARD_MIN_PEAK)
+      : (st.onEarth && st.landed && !st.crashed) ? 1
+      : 0.5 + 0.5 * clamp01(1 - st.altitude / st.maxAltitude),
+    done: st => st.hasFlown && st.maxAltitude >= HOMEWARD_MIN_PEAK && st.onEarth && st.landed && !st.crashed,
+    hint: st => st.maxAltitude < HOMEWARD_MIN_PEAK
+      ? 'peak ' + (st.maxAltitude / 1000).toFixed(1) + ' / 100 km — reach space first'
+      : (st.crashed ? 'vehicle destroyed' : (st.altitude / 1000).toFixed(1) + ' km up — land on Earth')
   }
 ];
 
@@ -51,6 +67,9 @@ export function flightState(game) {
     primaryRadius: rocket.body.radius,
     periapsis: game.orbit ? game.orbit.periapsis : 0,
     earthDistance: Math.hypot(rocket.position.x - earth.position.x, rocket.position.y - earth.position.y),
+    moonDistance: moon ? Math.hypot(rocket.position.x - moon.position.x, rocket.position.y - moon.position.y) : Infinity,
+    maxAltitude: rocket.maxAltitude || 0,
+    hasFlown: !!rocket.hasFlown,
     onMoon: !!(moon && rocket.body === moon),
     onEarth: rocket.body === earth,
     landed: !!rocket.landed,

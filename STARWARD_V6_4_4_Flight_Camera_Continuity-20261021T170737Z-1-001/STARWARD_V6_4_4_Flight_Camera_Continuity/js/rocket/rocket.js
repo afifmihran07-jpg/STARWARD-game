@@ -60,6 +60,8 @@ export class Rocket {
     this.maxQTime = null;
     this.maxQRecorded = false;
     this.flightElapsed = 0;
+    /** Highest altitude above the primary's mean radius reached this flight. */
+    this.maxAltitude = 0;
     this.flightEvents = [];
     this.flightPhase = 'PRELAUNCH';
     this.autoGuidance = false;

@@ -284,6 +284,10 @@ export function stepRocket(rocket, bodies, dt) {
     const gx = ax - g.x, gy = ay - g.y;
     rocket.gForce = Math.hypot(gx, gy) / 9.80665;
   }
+  // Peak altitude above the primary's mean radius (campaign: "been to space"),
+  // measured after this step's integration so it never lags the vehicle.
+  const altAfter = primary.altitude(rocket.position);
+  if (altAfter > (rocket.maxAltitude || 0)) rocket.maxAltitude = altAfter;
   rocket.body = primary;
   rocket.primaryBody = primary;
 }
