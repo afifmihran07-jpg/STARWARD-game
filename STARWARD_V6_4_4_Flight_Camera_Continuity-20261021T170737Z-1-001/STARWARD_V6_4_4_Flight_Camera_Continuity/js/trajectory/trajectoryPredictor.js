@@ -7,6 +7,7 @@
    prograde ΔV applied at t0.
    ========================================================================= */
 import {gravityAt} from '../physics/gravity.js';
+import {progradeDirection} from '../physics/physics.js';
 
 const STEPS = 300;
 const STEP_DT = 5;
@@ -41,9 +42,10 @@ export class TrajectoryPredictor {
     let p = {x: rocket.position.x, y: rocket.position.y};
     let v = {x: rocket.velocity.x, y: rocket.velocity.y};
     if (deltaV) {
-      const s = Math.hypot(v.x, v.y) || 1;
-      v.x += (v.x / s) * deltaV;
-      v.y += (v.y / s) * deltaV;
+      // Same body-relative prograde as applyDeltaV (the executed burn).
+      const dir = progradeDirection(rocket, body);
+      v.x += dir.x * deltaV;
+      v.y += dir.y * deltaV;
     }
 
     const engine = rocket.activeEngine;

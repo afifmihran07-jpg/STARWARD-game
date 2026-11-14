@@ -310,13 +310,29 @@ export function findPrimaryBody(rocket, bodies) {
 
 /** Instant impulse along the current velocity vector (the map maneuver node). */
 export function applyDeltaV(rocket, deltaV) {
-  const speed = Math.hypot(rocket.velocity.x, rocket.velocity.y);
-  if (!speed) {
-    rocket.velocity.y = deltaV;
-    return;
-  }
-  rocket.velocity.x += (rocket.velocity.x / speed) * deltaV;
-  rocket.velocity.y += (rocket.velocity.y / speed) * deltaV;
+  // Prograde is measured relative to the primary body. The absolute velocity
+  // includes the planet's ~30 km/s around the Sun, which made "prograde"
+  // mostly radial (audit B-4).
+  const dir = progradeDirection(rocket);
+  rocket.velocity.x += dir.x * deltaV;
+  rocket.velocity.y += dir.y * deltaV;
+}
+
+/** Unit prograde vector relative to the primary body; along the nose when
+ *  the vehicle is at rest relative to it. */
+export function progradeDirection(rocket, body = rocket.primaryBody || rocket.body) {
+  const rx = rocket.velocity.x - (body ? body.velocity.x : 0);
+  const ry = rocket.velocity.y - (body ? body.velocity.y : 0);
+  const speed = Math.hypot(rx, ry);
+  if (speed > 1e-6) return {x: rx / speed, y: ry / speed};
+  return {x: Math.sin(rocket.angle || 0), y: Math.cos(rocket.angle || 0)};
+}
+
+/** Propellant (kg) for an impulsive burn of |Δv| by the rocket equation:
+ *  m_f = m0·exp(−|Δv|/(Isp·g0)), propellant = m0 − m_f. */
+export function burnPropellant(massKg, deltaV, isp) {
+  if (!(massKg > 0) || !(isp > 0)) return Infinity;
+  return massKg * (1 - Math.exp(-Math.abs(deltaV) / (isp * 9.80665)));
 }
 
 /** Hohmann-style estimate for the transfer the map shows next to a body. */

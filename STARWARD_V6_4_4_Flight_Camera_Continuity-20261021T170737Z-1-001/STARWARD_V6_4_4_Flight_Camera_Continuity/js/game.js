@@ -17,7 +17,7 @@ import {terrainHeight} from './physics/collision.js';
 import {createLaunchSite} from './flight/launchSite.js';
 import {InputManager} from './flight/controls.js';
 import {controlRocket} from './flight/flightController.js';
-import {stepRocket, applyDeltaV} from './physics/physics.js';
+import {stepRocket, applyDeltaV, burnPropellant} from './physics/physics.js';
 import {orbitElements, isOrbitVerified} from './physics/orbitalMechanics.js';
 import {
   createMissionOperations, stepMissionOperations, deploySpacecraft as deployMissionSpacecraft,
@@ -705,16 +705,39 @@ export class Game {
   }
 
   executeBurn() {
-    if (!this.rocket || !this.node.active || !this.node.deltaV) {
+    const rocket = this.rocket;
+    if (!rocket || !this.node.active || !this.node.deltaV) {
       this.toast('No maneuver armed');
-      return;
+      return false;
     }
-    applyDeltaV(this.rocket, this.node.deltaV);
-    this.toast('Burn executed: ' + Math.round(this.node.deltaV) + ' m/s');
+    const dv = this.node.deltaV;
+    if (rocket.crashed || rocket.landed) {
+      this.toast('Burns can only be executed in flight');
+      return false;
+    }
+    const engine = rocket.activeEngine;
+    if (!engine || rocket.stageIndex < 0) {
+      this.toast('No active engine — ignite a stage (SPACE) before executing a burn');
+      return false;
+    }
+    // Impulsive burn, paid for with the lit stage's propellant at the
+    // engine's rated (vacuum) Isp: m_f = m0·exp(−|Δv|/(Isp·g0)).
+    const propellant = burnPropellant(rocket.mass, dv, engine.isp);
+    if (!(propellant <= rocket.currentFuel)) {
+      this.toast('Not enough propellant: ' + Math.abs(Math.round(dv)) + ' m/s needs ' +
+        Math.round(propellant).toLocaleString() + ' kg, the stage has ' +
+        Math.round(rocket.currentFuel).toLocaleString() + ' kg');
+      return false;
+    }
+    applyDeltaV(rocket, dv);
+    rocket.burn(propellant);
+    this.toast('Burn executed: ' + (dv > 0 ? '+' : '') + Math.round(dv) + ' m/s · ' +
+      Math.round(propellant).toLocaleString() + ' kg propellant');
     this.node.clear();
     this.plannedPoints = [];
     this.predictor.last = 0;
     updateBodyInfo(this);
+    return true;
   }
 
   /* ------------------------- mission operations ------------------------ */
