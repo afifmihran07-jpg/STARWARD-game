@@ -2,6 +2,7 @@
    flightUI.js — the FLIGHT COMPUTER panel and the mission progress bar.
    ========================================================================= */
 import {formatDistance, isOrbitVerified} from '../physics/orbitalMechanics.js';
+import {GUIDANCE_PHASE_LABELS} from '../flight/guidance.js';
 
 function setText(sel, text) {
   const el = document.querySelector(sel);
@@ -130,7 +131,10 @@ export function updateFlightUI(game, orbit) {
       ['ΔV LEFT', isSpacecraft ? 'N/A' : Math.round(remainingDv(r, st)) + ' m/s'],
       ['STAGE', isSpacecraft ? 'DEPLOYED' : r.stageNumber + ' / ' + r.totalStages],
       ['SAS', r.sas ? 'ON [T]' : 'OFF [T]'],
-      ['GUIDANCE', r.autoGuidance ? 'AUTO GRAVITY TURN [G]' : 'MANUAL [G]'],
+      // The real autopilot phase, or why it is off.
+      ['GUIDANCE', r.autoGuidance
+        ? 'AUTO · ' + (GUIDANCE_PHASE_LABELS[r.guidancePhase] || 'ENGAGED') + ' → ' + Math.round((r.guidanceTargetAltitude || 0) / 1000) + ' km [G]'
+        : r.guidancePhase === 'MANUAL_OVERRIDE' ? 'MANUAL OVERRIDE [G]' : 'MANUAL [G]'],
       ['FLIGHT PHASE', phaseLabels[r.flightPhase] || r.flightPhase || 'ASCENT'],
       ['WARP', game.warp + '\u00D7'],
       ['PRIMARY', body.name],

@@ -24,7 +24,7 @@ import {
   downlinkMissionData, setScienceInstrument
 } from './missions/missionOperations.js';
 import {evaluateMissionDebrief} from './missions/missionDebrief.js';
-import {assessMission} from './construction/missionSystems.js';
+import {assessMission, MISSION_PROFILES} from './construction/missionSystems.js';
 import {missionBreakdown, profileById, formatMoney, smallestProfileFor, budgetLevel} from './construction/budget.js';
 import {TrajectoryPredictor} from './trajectory/trajectoryPredictor.js';
 import {ManeuverNode} from './trajectory/maneuverNode.js';
@@ -32,6 +32,7 @@ import {MissionManager, MISSIONS} from './missions/missionManager.js';
 import {SaveManager} from './save/saveManager.js';
 import {buildLibrary, updateBuildStats, getSelectedMissionProfile, setMissionProfile} from './ui/buildUI.js';
 import {MISSION_PRESET_CONFIGS} from './construction/missionPresets.js';
+import {GUIDANCE_DEFAULTS} from './flight/guidance.js';
 import {updateFlightUI} from './ui/flightUI.js?v=flight-dashboard-replica-20261111';
 import {updateBodyInfo, initBodyChips, initBodyFocusList, updateBridgeWarp} from './ui/mapUI.js?v=orbital-console-reference-20261023a';
 import {selectBody, focusBody, fitSystem, fitBody, bodyOrder} from './map/spaceMap.js?v=orbital-console-reference-20261023a';
@@ -695,6 +696,39 @@ export class Game {
     updateFlightUI(this, this.orbit);
   }
 
+  /**
+   * Flight-control input for this mode. On the MAP the arrow keys cycle the
+   * selected body, so they must not also throttle/steer the vehicle (or
+   * silently disengage the autopilot). W/S/A/D/Z/X still fly it there.
+   */
+  flightInput() {
+    if (this.mode !== 'MAP') return this.input;
+    if (!this._mapFlightInput) {
+      this._mapFlightInput = {pressed: k => !k.startsWith('Arrow') && this.input.pressed(k)};
+    }
+    return this._mapFlightInput;
+  }
+
+  /** G key: engage or disengage the gravity-turn / circularization autopilot. */
+  toggleAutopilot() {
+    const r = this.rocket;
+    if (!r || r.crashed) return false;
+    if (r.autoGuidance) {
+      r.autoGuidance = false;
+      r.guidancePhase = null;
+      this.toast('Autopilot OFF — manual control');
+    } else {
+      const profile = MISSION_PROFILES[getSelectedMissionProfile()];
+      r.guidanceTargetAltitude = (profile && profile.orbitAlt) || GUIDANCE_DEFAULTS.altitude;
+      r.guidanceMemory = null;            // re-derive the phase from the live state
+      r.autoGuidance = true;
+      this.toast('Autopilot ON · target orbit ' + Math.round(r.guidanceTargetAltitude / 1000) + ' km' +
+        (r.stageIndex < 0 ? ' · press SPACE to ignite' : ''));
+    }
+    updateFlightUI(this, this.orbit);
+    return r.autoGuidance;
+  }
+
   /** Recompute the cyan "planned burn" path from the current node. */
   planNode() {
     if (!this.rocket || !this.node.active || !this.node.deltaV) {
@@ -1031,6 +1065,10 @@ export class Game {
       }
     }
 
+    // G: autopilot on/off (FLIGHT and MAP). It targets the selected mission
+    // profile's orbit altitude, or 200 km when the profile has none.
+    if ((this.mode === 'FLIGHT' || this.mode === 'MAP') && this.rocket && hit('KeyG')) this.toggleAutopilot();
+
     if (this.mode === 'FLIGHT' && this.rocket && hit('KeyT')) {
       this.rocket.sas = !this.rocket.sas;
       updateFlightUI(this, this.orbit);
@@ -1093,7 +1131,7 @@ export class Game {
         if (this.rocket) {
           const flightBody = this.rocket.body || this.rocket.primaryBody;
           const previousAltitude = flightBody ? this.rocket.altitudeAboveSurface(flightBody) : 0;
-          controlRocket(this.rocket, this.input, sdt);
+          controlRocket(this.rocket, this.flightInput(), sdt);
           stepRocket(this.rocket, this.bodies, sdt);
           if (flightBody) this.checkAtmosphereExit(flightBody, previousAltitude);
           this.physicsSteps++;
@@ -1104,6 +1142,10 @@ export class Game {
       }
 
       if (this.rocket) {
+        if (this.rocket.guidanceOverridden) {
+          this.rocket.guidanceOverridden = false;
+          this.toast('Autopilot disengaged — manual control (press G to re-engage)');
+        }
         this.orbit = orbitElements(this.rocket.position, this.rocket.velocity, this.rocket.body);
         this.predictor.update(this.rocket, this.bodies, performance.now());
         if (this.node.active) this.planNode();
