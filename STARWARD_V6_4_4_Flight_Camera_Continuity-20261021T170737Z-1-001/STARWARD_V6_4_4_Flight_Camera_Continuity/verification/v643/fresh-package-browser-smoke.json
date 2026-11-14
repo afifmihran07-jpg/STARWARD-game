@@ -1,0 +1,16 @@
+{
+  "build_id": "STARWARD-FLIGHT-REALISM-20261016-V6.4.3",
+  "errors": [],
+  "failed_requests": [],
+  "not_found": [],
+  "flight": {
+    "mode": "FLIGHT",
+    "altitude": 1308.6693113254244,
+    "speed": 270.6505952198723,
+    "fuel": 34392.66044191781,
+    "thrust": 1630719.5287694873,
+    "autoGuidance": true,
+    "phase": "POWERED_ASCENT"
+  },
+  "clean": true
+}

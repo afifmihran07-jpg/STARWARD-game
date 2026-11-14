@@ -1,0 +1,1114 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARWARD — Space Mission Design & Flight Simulation</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=starward-flight-realism-20261016-v643">
+    <link rel="stylesheet" href="style.css?v=flight-dashboard-replica-20261111">
+    <link rel="stylesheet" href="css/flight-dashboard.css?v=flight-dashboard-replica-20261111d">
+    <!-- Dashboard layout anchors (docks, panels, mode gating) live in style.css. -->
+  </head>
+  <body data-ui-mode="build">
+    <canvas id="gameCanvas" aria-label="Starward flight simulation"></canvas>
+    <div id="app" class="app">
+      <header class="topbar">
+        <div class="ops-header-primary">
+          <div class="brand">STARWARD <span>FLIGHT WORKSHOP</span></div>
+          <div class="map-vessel-id"><span>VESSEL: STARWARD-01</span><b>// ODYSSEY</b></div>
+          <div id="modeTabs" class="tabs">
+            <button data-mode="BUILD">BUILD</button>
+            <button data-mode="FLIGHT">FLIGHT</button>
+            <button data-mode="MAP">SYSTEM MAP</button>
+          </div>
+          <div class="map-top-status"><b><i></i> SYS NOMINAL</b><span>// EPOCH J2000 // UTC</span></div>
+        </div>
+        <div class="actions ops-header-tools">
+          <button id="newGame" title="Clear build and create a custom rocket">NEW CUSTOM</button>
+          <select id="presetRocketSelect" class="preset-select" aria-label="Load pre-built vehicle preset" title="Choose a pre-built rocket preset">
+            <option value="" disabled selected>PRE-BUILT ROCKETS &#x25BE;</option>
+            <option value="starter">⭐ Starter Training Rocket</option>
+            <option value="earthObservation">🌍 Earth Observation (500 km)</option>
+            <option value="weather">🌦️ Weather &amp; Climate (700 km)</option>
+            <option value="communications">📡 Communications Relay (1,200 km)</option>
+            <option value="lunar">🌕 Lunar Exploration Stack</option>
+            <option value="planetary">🪐 Planetary Deep Space Explorer</option>
+            <option value="technology">🔬 Technology Demo Launcher</option>
+            <option value="custom">✏️ Blank Custom Rocket</option>
+          </select>
+          <button id="starterRocket" title="Load a ready-to-fly single-stage starter rocket">STARTER ROCKET</button>
+          <button id="saveGame">SAVE</button>
+          <button id="loadGame">LOAD</button>
+          <button id="debugButton">F3 DEBUG</button>
+        </div>
+      </header>
+      <!-- ================================================================
+           DOCKED DASHBOARDS — every panel stacks inside a fixed column so
+           the modes can never overlap each other. JS still toggles the
+           per-mode panels; CSS mode gating keeps each column minimal.
+           ================================================================ -->
+      <div class="dock dock--left">
+        <aside id="partsPanel" class="panel parts">
+          <h2>PARTS</h2>
+          <div id="partLibrary"></div>
+          <p class="hint" id="partHint">Click a part, then click the build field. Drag parts to reposition.</p>
+        </aside>
+        <section id="missionPanel" class="panel mission">
+          <div class="eyebrow">ACTIVE MISSION</div>
+          <h2 id="missionName">Altitude Trial</h2>
+          <p id="missionObjective">Reach an altitude of 10 km.</p>
+          <div class="progress"><i id="missionProgress"></i></div>
+          <small id="missionState">0%</small>
+          <div class="row">
+            <button id="nextMission">NEXT MISSION</button>
+          </div>
+        </section>
+        <section id="missionOpsPanel" class="panel mission-ops" data-active="false" aria-live="polite">
+          <div class="eyebrow">POST-LAUNCH OPERATIONS</div>
+          <h2 id="opsProfile">Mission systems</h2>
+          <p id="opsStatus">Awaiting a verified bound orbit</p>
+          <details class="dashboard-details">
+            <summary>Systems telemetry</summary>
+            <div class="mission-ops__metrics">
+              <div><span>POWER</span><b id="opsPower">—</b></div>
+              <div><span>BATTERY</span><b id="opsBattery">—</b></div>
+              <div><span>SCIENCE</span><b id="opsScience">—</b></div>
+              <div><span>DATA</span><b id="opsData">0 MB stored</b></div>
+              <div><span>DOWNLINK</span><b id="opsDownlinked">0 MB downlinked</b></div>
+            </div>
+          </details>
+          <div class="row">
+            <button id="deploySpacecraft" type="button" disabled>DEPLOY SPACECRAFT</button>
+          </div>
+          <div class="row">
+            <button id="missionInstrumentToggle" type="button" disabled>SCIENCE: OFF</button>
+            <button id="missionDownlink" type="button" disabled>DOWNLINK DATA</button>
+          </div>
+          <div class="row">
+            <button id="evaluateMission" type="button">EVALUATE MISSION</button>
+          </div>
+          <details class="dashboard-details dashboard-details--note">
+            <summary>Operations log &amp; system notes</summary>
+            <small id="opsEvents">No mission events yet</small>
+            <p class="hint">Normalized gameplay power/data units; downlink uses a simplified range model, not an RF link budget. Deployment requires an upper payload stage containing a command core and mission hardware, separated from the launch vehicle by a stage joint. Lunar/planetary transfers are not implemented.</p>
+          </details>
+          <section id="missionDebrief" class="mission-debrief" hidden aria-live="polite">
+            <h3 id="debriefGrade">MISSION RESULT</h3>
+            <p id="debriefSummary"></p>
+            <small id="debriefIssues"></small>
+          </section>
+        </section>
+      </div>
+      <div class="dock dock--right">
+        <aside id="inspector" class="panel inspector">
+          <h2>ASSEMBLY</h2>
+          <div id="selectedInfo">Select a component</div>
+          <label>
+            Symmetry
+            <select id="symmetry">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>6</option>
+              <option>8</option>
+            </select>
+          </label>
+          <div class="row">
+            <button id="rotatePart">ROTATE</button>
+            <button id="duplicatePart">DUPLICATE</button>
+            <button id="deletePart">DELETE</button>
+          </div>
+          <div class="row">
+            <button id="undo">UNDO</button>
+            <button id="redo">REDO</button>
+          </div>
+          <div class="row">
+            <button id="clearDesign">CLEAR BUILD</button>
+          </div>
+          <p class="hint">R rotate · DEL remove · Ctrl+Z undo · wheel zoom on the map</p>
+        </aside>
+        <section id="hud" class="hud panel">
+          <!-- LEFT: altitude / velocity telemetry -->
+          <div class="fh-card fh-card--telemetry">
+            <div class="fh-row">
+              <span class="fh-label">Altitude (ASL)</span>
+              <span class="fh-label">Tot <b id="flightTot">—</b></span>
+            </div>
+            <div id="metrics" class="metrics"></div>
+            <div class="fh-velocity-meta">
+              <span class="fh-label">Mach <b id="flightMach">—</b></span>
+              <em id="flightRegime">—</em>
+            </div>
+            <div class="fh-telemetry-foot">
+              <span class="fh-foot-item">
+                <span class="fh-bolt" aria-hidden="true"><svg width="7" height="8" viewBox="0 0 8 10" fill="currentColor"><path d="M4.6 0 0 5.6h2.7L2.2 10 7 4.1H4.1z"/></svg></span>
+                <span class="fh-label">Apogee</span>
+                <b id="flightApogee">—</b>
+              </span>
+              <span class="fh-foot-item">
+                <span class="fh-label">Accel</span>
+                <b id="flightAccel">—</b>
+              </span>
+            </div>
+            <details class="fh-more">
+              <summary>Full telemetry</summary>
+              <div id="metricsMore" class="metrics metrics--more"></div>
+            </details>
+          </div>
+
+          <!-- RIGHT: stage propellant and systems -->
+          <div class="fh-right">
+            <div class="fh-card fh-card--fuel">
+              <div class="fh-fuel-main">
+                <div class="fh-fuel-copy">
+                  <span class="fh-label">Stage propellant</span>
+                  <div class="fh-fuel-percent"><b id="fuelPercent">100</b><span class="fh-fuel-unit">%</span></div>
+                  <span class="fh-fuel-mass"><b id="fuelMass">— kg</b> REMAINING</span>
+                </div>
+                <div class="fh-fuel-ringwrap">
+                  <div id="fuelGauge" class="fh-fuel-ring"></div>
+                  <span class="fh-fuel-ringlabel">FUEL</span>
+                </div>
+              </div>
+            </div>
+            <div class="fh-pills">
+              <button id="sasBadge" class="fh-pill" type="button" aria-pressed="true" title="Toggle stability assist (T)">SAS STANDBY</button>
+              <span class="fh-pill fh-pill--idle" title="Reaction control system status">RCS STBY</span>
+            </div>
+            <div id="flightStatus" class="status">STANDBY</div>
+          </div>
+
+          <!-- SCENE ANNOTATIONS -->
+          <div class="flight-scene-label flight-scene-label--transonic" id="flightTransonic">TRANSONIC BOUNDARY // —</div>
+          <div class="flight-scene-label flight-scene-label--maxq" id="flightMaxQ">MAX-Q PRESSURE ZONE // —</div>
+          <div class="flight-scene-label flight-scene-label--pad" id="flightPadLabel">LAUNCH PAD // —</div>
+
+          <!-- BOTTOM: flight dock -->
+          <div class="fh-dock">
+            <div class="fh-views" role="group" aria-label="Camera view">
+              <button type="button" data-flight-view="pad" title="Close pad framing">PAD</button>
+              <button type="button" data-flight-view="chase" class="is-active" title="Chase framing">CHASE</button>
+              <button type="button" data-flight-view="orbit" title="Wide orbit framing">ORBIT</button>
+            </div>
+            <button id="stageButton" type="button" title="Separate stage (Space)">
+              <svg viewBox="0 0 12 14" fill="currentColor" aria-hidden="true"><path d="M7 0 0 8h4.2L3.4 14 12 5.4H7.3z"/></svg>
+              <span class="fh-stage-text"><span id="stageLine">Stage 1</span><span id="stageAction">Separation</span></span>
+            </button>
+            <div class="fh-throttle">
+              <span class="fh-label">Throttle</span>
+              <div class="fh-throttle-row">
+                <output id="throttleOut" for="throttle">0%</output>
+                <input id="throttle" type="range" min="0" max="100" value="0" aria-label="Throttle">
+                <button id="throttleCut" type="button" title="Cut engine">CUT</button>
+              </div>
+            </div>
+            <div id="flightTools" class="fh-warp" role="group" aria-label="Time warp">
+              <button id="pauseButton" class="fh-pause" type="button">PAUSE [P]</button>
+              <b id="warpValue" hidden>1&#x00D7;</b>
+              <button class="fh-warp-btn" type="button" data-warp-value="1">1x</button>
+              <button class="fh-warp-btn" type="button" data-warp-value="2">2x</button>
+              <button class="fh-warp-btn" type="button" data-warp-value="5">5x</button>
+              <button class="fh-warp-btn" type="button" data-warp-value="10">10x</button>
+            </div>
+            <button id="mapButton" class="fh-ghost" type="button" title="Open the system map (M)">MAP</button>
+            <button id="flightAbort" class="fh-abort" type="button">△ ABORT</button>
+          </div>
+        </section>
+        <button id="missionDockToggle" class="flight-mission-toggle" type="button" aria-expanded="false">MISSION OPS <span>+</span></button>
+      <section id="missionDesign" class="panel mission-design">
+        <div class="eyebrow">MISSION DESIGN</div>
+        <label for="missionProfile">Mission objective</label>
+        <select id="missionProfile" aria-label="Mission objective">
+          <option value="earthObservation">Earth observation</option>
+          <option value="weather">Weather &amp; climate</option>
+          <option value="communications">Communications</option>
+          <option value="lunar">Lunar exploration</option>
+          <option value="planetary">Planetary exploration</option>
+          <option value="technology">Technology demonstration</option>
+        </select>
+        <button id="loadMissionRocket" type="button" class="btn--preset-mission" title="Load an authentic pre-built rocket tailored to this mission objective">
+          🚀 LOAD PRE-BUILT ROCKET
+        </button>
+        <div class="mission-design__score"><span>Design readiness</span><b id="missionReadiness">—</b></div>
+        <div class="mission-design__meter"><i id="missionReadinessMeter"></i></div>
+        <details class="dashboard-details">
+          <summary>Vehicle capability &amp; checks</summary>
+          <div class="mission-design__metrics" id="missionSystemsMetrics"></div>
+          <ul id="missionDesignWarnings" class="mission-design__warnings"></ul>
+          <p class="hint">Capability units are simplified gameplay estimates, not real spacecraft specifications. Hardware choices affect readiness.</p>
+        </details>
+      </section>
+      <button id="helpToggle" class="help-toggle" type="button" title="Show controls">?</button>
+      </div>
+
+      <!-- LEFT: Celestial Body Focus Panel (shown in MAP mode) -->
+      <section id="bodyFocusPanel" class="panel body-focus map-panel">
+        <div class="map-rack-head">
+          <span>TELEMETRY RACK // C-01</span>
+          <b><i></i> LINK NORMAL</b>
+        </div>
+        <div class="map-rack-readings" aria-label="System telemetry status">
+          <div><span>CORE RELAY</span><b>99.8% (DSN LOCK)</b></div>
+          <div><span>ATTITUDE ACS</span><b>FINE POINTING</b></div>
+          <div><span>HELIOCENTRIC REF</span><b>J2000 ECLIPTIC</b></div>
+        </div>
+        <button class="map-mode-readout" data-mode="BUILD" type="button"><b>01 // BUILD VEHICLE</b><span>DESIGN</span></button>
+        <button class="map-mode-readout map-mode-readout--muted" data-mode="FLIGHT" type="button"><b>02 // FLIGHT TELEMETRY</b><span>LIVE</span></button>
+        <button class="map-mode-readout map-mode-readout--active" data-mode="MAP" type="button"><b>03 // SYSTEM MAP</b><span>ORB-4</span></button>
+        <div class="sysmap-eyebrow">CELESTIAL BODY FOCUS</div>
+        <div class="body-focus-tabs" id="bodyFocusTabs">
+          <button class="body-tab" data-body="sol">SOL</button>
+          <button class="body-tab" data-body="venus">VENUS</button>
+          <button class="body-tab" data-body="earth">EARTH</button>
+          <button class="body-tab is-target" data-body="mars">MARS <span class="target-tag">TARGET</span></button>
+          <button class="body-tab" data-body="jupiter">JUPITER</button>
+          <button class="body-tab" data-body="saturn">SATURN</button>
+        </div>
+        <div class="body-focus-divider"></div>
+
+        <div class="sysmap-eyebrow">SELECTED BODY</div>
+        <h3 class="body-focus__name" id="bodyName">—</h3>
+        <p class="body-focus__kind" id="bodyInfo">—</p>
+        <p class="body-focus__fact" id="bodyFact" hidden></p>
+        <dl class="body-stats" id="bodyStats"></dl>
+        <p class="body-focus__orbit" id="plannedOrbit">No maneuver armed</p>
+
+        <div class="sysmap-eyebrow">AVIONICS CORE</div>
+        <div class="body-focus-status">
+          <span class="status-label">NOMINAL</span>
+          <span class="status-value">(99.4%)</span>
+        </div>
+      </section>
+
+      <!-- RIGHT: Astrodynamics / Maneuver Telemetry Panel -->
+      <section id="mapInfo" class="panel map-info map-telemetry map-panel">
+        <div class="ref-plane-row">
+          <div class="ref-plane-label">REF PLANE</div>
+          <div class="ref-plane-value">ECLIPTIC J2000</div>
+          <div class="ref-plane-mode">HOHMANN LOCK</div>
+        </div>
+
+        <div class="sysmap-eyebrow">ASTRODYNAMICS // MANEUVER HUD</div>
+
+        <div class="map-telemetry-grid">
+        <div class="telemetry-group">
+          <span class="telemetry-label">TARGET BODY</span>
+          <span id="targetBodyName" class="telemetry-value mono">MARS (1.52 AU)</span>
+        </div>
+        <div class="telemetry-group">
+          <span class="telemetry-label">RELATIVE VELOCITY</span>
+          <span id="targetRelativeVelocity" class="telemetry-value mono">24.8 km/s</span>
+        </div>
+        <div class="telemetry-group">
+          <span class="telemetry-label">REMAINING ΔV</span>
+          <span id="targetDeltaV" class="telemetry-value mono amber">840 m/s</span>
+        </div>
+        <div class="telemetry-group">
+          <span class="telemetry-label">INTERCEPT ETA</span>
+          <span id="targetEta" class="telemetry-value mono">T-04:22:10</span>
+        </div>
+        </div>
+
+        <div class="sysmap-eyebrow">MANEUVER NODE</div>
+        <div class="map-node-readout">
+        <div class="telemetry-group">
+          <span class="telemetry-label">NEXT BURN</span>
+          <span id="nodeBurnName" class="telemetry-value mono">TCM-3 MIDCOURSE</span>
+        </div>
+        <div class="telemetry-group">
+          <span class="telemetry-label">TIME TO BURN</span>
+          <span id="nodeTimeToBurn" class="telemetry-value mono">T-18h 42m 10s</span>
+        </div>
+        <div class="telemetry-group">
+          <span class="telemetry-label">ΔV</span>
+          <span id="nodeDeltaV" class="telemetry-value mono amber">44.2</span>
+        </div>
+        </div>
+        <div class="node-actions">
+          <button id="addNodeBtn" class="node-btn">ARM NODE</button>
+        </div>
+
+        <details class="map-advanced-controls">
+        <summary>MANEUVER &amp; MAP CONTROLS</summary>
+        <div class="sysmap-eyebrow">MANEUVER ACTIONS</div>
+        <div class="node-actions">
+          <button data-node="prograde" class="node-btn">+ PROGRADE</button>
+          <button data-node="retrograde" class="node-btn">+ RETROGRADE</button>
+          <button id="clearNode" class="node-btn node-btn--ghost">CLEAR</button>
+          <button id="executeBurn" class="node-btn node-btn--burn">EXECUTE BURN</button>
+        </div>
+        <div class="sysmap-eyebrow">NAVIGATION</div>
+        <div class="nav-actions">
+          <button id="mapFit" class="nav-btn">FIT SYSTEM</button>
+          <button id="mapFocus" class="nav-btn">FOCUS SELECTED</button>
+          <button id="mapFitBody" class="nav-btn">FIT BODY</button>
+          <button id="mapScale" class="nav-btn">SCALE: COMPRESSED</button>
+          <button id="mapTarget" class="nav-btn">SET TARGET</button>
+          <button id="mapLaunch" class="nav-btn">LAUNCH TO SELECTED</button>
+        </div>
+
+        <div class="sysmap-eyebrow">TIME WARP</div>
+        <div class="telemetry-group">
+          <span class="telemetry-label">MAP WARP</span>
+          <span id="mapWarpValue" class="telemetry-value mono">1&#x00D7;</span>
+        </div>
+        </details>
+      </section>
+
+      <!-- BOTTOM: Telemetry Bridge -->
+      <section id="bottomTelemetryBridge" class="bottom-bridge map-panel">
+        <div class="bridge-group bridge-warp">
+          <span class="bridge-label">WARP SCALE</span>
+          <span id="bridgeWarpValue" class="bridge-value mono">1.00x/s</span>
+          <div class="bridge-warp-controls">
+            <button id="warpMinus" class="bridge-btn">−</button>
+            <span id="bridgeWarpMultiplier" class="bridge-value mono">1&#x00D7;</span>
+            <button id="warpPlus" class="bridge-btn">+</button>
+          </div>
+        </div>
+        <div class="bridge-group bridge-presets" aria-label="Time warp presets">
+          <button id="mapPause" class="bridge-btn bridge-pause" type="button" title="Pause or resume">Ⅱ</button>
+          <button class="warp-preset is-active" type="button" data-warp-value="1">1× REALTIME</button>
+          <button class="warp-preset" type="button" data-warp-value="10">10×</button>
+          <button class="warp-preset" type="button" data-warp-value="100">100×</button>
+          <button class="warp-preset" type="button" data-warp-value="1000">1000×</button>
+        </div>
+        <div class="bridge-divider"></div>
+        <div class="bridge-group bridge-encounter">
+          <span class="bridge-label">TARGET ENCOUNTER</span>
+          <span id="bridgeEncounter" class="bridge-value mono">MARS INTERCEPT (1.524 AU)</span>
+        </div>
+        <div class="bridge-divider"></div>
+        <div class="bridge-group bridge-anomaly">
+          <span class="bridge-label">TRUE ANOMALY</span>
+          <span id="bridgeAnomaly" class="bridge-value mono">138.4°</span>
+        </div>
+        <div class="bridge-divider"></div>
+        <div class="bridge-group bridge-refplane">
+          <span class="bridge-label">REF PLANE</span>
+          <span id="bridgeRefPlane" class="bridge-value mono">ECLIPTIC J2000</span>
+        </div>
+        <div class="bridge-divider"></div>
+        <div class="bridge-group bridge-velocity">
+          <span class="bridge-label">CRAFT VELOCITY</span>
+          <span id="bridgeVelocity" class="bridge-value mono">24.8 km/s</span>
+        </div>
+        <div class="bridge-divider"></div>
+        <div class="bridge-group bridge-dv">
+          <span class="bridge-label">REMAINING ΔV</span>
+          <span id="bridgeDv" class="bridge-value mono amber">840 m/s</span>
+        </div>
+        <div class="bridge-divider"></div>
+        <div class="bridge-group bridge-eta">
+          <span class="bridge-label">ETA</span>
+          <span id="bridgeEta" class="bridge-value mono">T-04:22:10</span>
+        </div>
+      </section>
+      <section id="buildStats" class="panel stats">
+        <span>MASS <b id="statMass">—</b></span>
+        <span>ΔV <b id="statDv">—</b></span>
+        <span>TWR <b id="statTwr">—</b></span>
+        <details class="dashboard-details build-extra-stats">
+          <summary>More vehicle data</summary>
+          <div class="build-extra-stats__content">
+            <span>STAGES <b id="statStages">—</b></span>
+            <span>COST <b id="statCost">—</b></span>
+            <button id="budgetToggle" class="budget-cell" type="button" title="Mission budget">
+              <span class="budget-cell__head">BUDGET <b id="statBudget">—</b></span>
+              <span class="budget-meter"><i id="budgetMeter"></i></span>
+              <span class="budget-cell__foot"><em id="budgetProfile">DISCOVERY</em><b id="budgetPct">—</b></span>
+            </button>
+          </div>
+        </details>
+        <span id="statWarn" class="stat-warning" hidden></span>
+        <button id="launchButton">LAUNCH VEHICLE</button>
+      </section>
+      <section id="help" class="panel help" hidden>
+        <b>Controls</b> W/S throttle · A/D steer · Space stage · M map · P pause · , . time warp · wheel zoom · drag pan · R rotate · DEL remove · F3 debug · on the map: click select · double-click focus · arrows cycle bodies · 1–9 jump · T target · F focus
+      </section>
+      <section id="debug" class="panel debug" hidden></section>
+      <div id="toast" class="toast" hidden></div>
+
+<!-- ===================================================================
+     MISSION BUDGET — NASA-anchored cost breakdown
+     =================================================================== -->
+      <div id="budgetModal" class="budget-modal" hidden>
+        <div class="budget-modal__scrim" data-budget-close></div>
+        <section class="budget-sheet" role="dialog" aria-modal="true" aria-label="Mission budget">
+          <header class="budget-sheet__head">
+            <div>
+              <span class="eyebrow">MISSION BUDGET</span>
+              <h2 id="budgetTitle">DISCOVERY-CLASS</h2>
+              <p class="budget-sheet__note" id="budgetNote"></p>
+            </div>
+            <button class="budget-close" type="button" data-budget-close aria-label="Close budget panel">&#10005;</button>
+          </header>
+
+          <div id="budgetProfiles" class="budget-chips" role="group" aria-label="Budget class"></div>
+
+          <div class="budget-summary">
+            <div id="budgetRing" class="budget-ring">
+              <span class="budget-ring__hole">
+                <b id="budgetRingPct">—</b>
+                <small id="budgetRingLabel">of cap used</small>
+              </span>
+            </div>
+            <div class="budget-figures">
+              <div class="budget-figure"><span>MISSION COST</span><b id="budgetSpent">—</b></div>
+              <div class="budget-figure"><span>BUDGET CAP</span><b id="budgetCap">—</b></div>
+              <div class="budget-figure"><span>HEADROOM</span><b id="budgetRemaining">—</b></div>
+              <p id="budgetStatus" class="budget-status is-ok">—</p>
+            </div>
+          </div>
+
+          <div id="budgetLines" class="budget-lines"></div>
+          <footer id="budgetFoot" class="budget-foot"></footer>
+        </section>
+      </div>
+    </div>
+    <template id="legacy-3d-source">
+
+<!-- ===================================================================
+     BOOT / SELF-TEST SCREEN
+     The physics validation suite runs here before the game starts, so a
+     broken integrator can never silently produce a "playable" game.
+     =================================================================== -->
+      <div id="boot-screen" class="screen screen--boot is-active">
+        <div class="boot__panel">
+          <h1 class="boot__title">ORBITAL</h1>
+          <p class="boot__subtitle">Initialising physics core&hellip;</p>
+          <ul id="boot-test-list" class="boot__tests" aria-live="polite">
+            <li class="boot__test" data-test="pending"><span class="boot__test-name">Validating integrator</span><span class="boot__test-status">running</span></li>
+          </ul>
+          <p id="boot-verdict" class="boot__verdict" role="status">Running physics self-test&hellip;</p>
+          <button id="boot-continue" class="btn btn--primary" type="button" disabled>
+            Continue
+          </button>
+          <noscript>
+            <p class="boot__verdict boot__verdict--fail">
+              This game requires JavaScript. Please enable it and reload.
+            </p>
+          </noscript>
+        </div>
+      </div>
+
+<!-- ===================================================================
+     MAIN MENU
+     =================================================================== -->
+      <div id="main-menu" class="screen screen--menu">
+        <div class="menu__panel">
+          <header class="menu__header">
+            <h1 class="menu__title">ORBITAL</h1>
+            <p class="menu__tagline">Newtonian flight &middot; two-body gravity &middot; real delta-v</p>
+          </header>
+
+          <nav class="menu__nav" aria-label="Main">
+            <button class="btn" id="btn-mission-select" type="button">Mission Catalog</button>
+            <button class="btn" id="btn-help" type="button">Controls &amp; Physics</button>
+            <button class="btn" id="btn-settings" type="button">Settings</button>
+          </nav>
+
+          <section id="mission-planner" class="mission-planner" aria-labelledby="planner-title">
+            <div class="planner__brief">
+              <h2 id="planner-title" class="mission-select__title">Choose your mission</h2>
+              <p class="planner__intro">Select a payload profile to see its currently playable flight scenario.</p>
+              <div class="mission-types" role="group" aria-label="Mission type">
+                <button class="mission-type is-selected" type="button" data-mission-type="astronaut" aria-pressed="true">
+                  <span class="mission-type__icon" aria-hidden="true">A</span>
+                  <span class="mission-type__name">Astronaut</span>
+                  <span class="mission-type__desc">Crewed orbital operations</span>
+                </button>
+                <button class="mission-type" type="button" data-mission-type="cargo" aria-pressed="false">
+                  <span class="mission-type__icon" aria-hidden="true">C</span>
+                  <span class="mission-type__name">Cargo</span>
+                  <span class="mission-type__desc">Efficient orbit raising</span>
+                </button>
+                <button class="mission-type" type="button" data-mission-type="rover" aria-pressed="false">
+                  <span class="mission-type__icon" aria-hidden="true">R</span>
+                  <span class="mission-type__name">Rover</span>
+                  <span class="mission-type__desc">Mars-system field test</span>
+                </button>
+              </div>
+              <div class="planner__selection" aria-live="polite">
+                <p id="planner-mission-name" class="planner__mission-name">Orbital Checkout</p>
+                <p id="planner-mission-brief" class="planner__mission-brief">Rendezvous and dock with the Kestrel waystation in Earth orbit.</p>
+                <p id="planner-scenario-note" class="planner__note">Choose a destination and payload. Design a rocket before launch.</p>
+                <button class="btn btn--primary" id="btn-open-workshop" type="button">Design this rocket</button>
+              </div>
+            </div>
+            <div class="planner__map">
+              <div class="map-heading">
+                <h2 class="mission-select__title">Solar system · Sun to Mars</h2>
+                <div class="map-modes" role="group" aria-label="Map view">
+                  <button class="map-mode is-selected" type="button" data-map-mode="2d" aria-pressed="true">2D</button>
+                  <button class="map-mode" type="button" data-map-mode="3d" aria-pressed="false">3D</button>
+                </div>
+              </div>
+              <canvas id="solar-map" class="solar-map" width="900" height="390"
+                      role="img" aria-label="Scaled reference map of the inner solar system showing Mercury, Venus, Earth, Mars and an idealized Earth-to-Mars Hohmann transfer arc. Planet sizes are enlarged.">
+              </canvas>
+              <p id="solar-map-caption" class="solar-map__caption">2D top-down reference; orbital radii to scale, planet disks enlarged.</p>
+              <p id="solar-map-facts" class="solar-map__facts"></p>
+              <div class="planet-gallery" aria-label="Supplied planet reference images">
+                <figure><img src="assets/sun-reference.svg" alt="Sun reference"><figcaption>Sun</figcaption></figure>
+                <figure><img src="assets/mercury-reference.svg" alt="Mercury reference"><figcaption>Mercury</figcaption></figure>
+                <figure><img src="assets/venus-reference.svg" alt="Venus reference"><figcaption>Venus</figcaption></figure>
+                <figure><img src="assets/earth-reference.svg" alt="Earth reference"><figcaption>Earth</figcaption></figure>
+                <figure><img src="assets/mars-reference.svg" alt="Mars reference"><figcaption>Mars</figcaption></figure>
+                <figure><img src="assets/moon-reference.svg" alt="Moon reference"><figcaption>Moon</figcaption></figure>
+                <figure><img src="assets/phobos-reference.svg" alt="Phobos reference"><figcaption>Phobos</figcaption></figure>
+                <figure><img src="assets/deimos-reference.svg" alt="Deimos reference"><figcaption>Deimos</figcaption></figure>
+              </div>
+            </div>
+          </section>
+
+          <section id="rocket-workshop" class="rocket-workshop" hidden aria-labelledby="workshop-title">
+            <div class="workshop__topline">
+              <div class="workshop__identity">
+                <button id="btn-back-missions" class="builder-icon-button" type="button" aria-label="Back to mission selection" title="Mission selection">☰</button>
+                <div>
+                  <p class="workshop__eyebrow">VEHICLE ASSEMBLY</p>
+                  <h2 id="workshop-title" class="workshop__title">Rocket workshop</h2>
+                  <p id="workshop-mission" class="workshop__mission"></p>
+                </div>
+              </div>
+              <div class="workshop__top-actions">
+                <span class="builder-save-state"><i></i> LIVE BUILD</span>
+                <button class="btn btn--primary builder-launch-top" type="button" data-launch-rocket>LAUNCH</button>
+              </div>
+            </div>
+            <div class="workshop__layout">
+              <aside class="workshop__parts">
+                <p class="builder-rail-title">PARTS</p>
+                <div class="builder-category-tabs" role="tablist" aria-label="Rocket components">
+                  <button class="builder-category-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="builder-engines" data-builder-category="engines"><span aria-hidden="true">◉</span> Engines</button>
+                  <button class="builder-category-tab" type="button" role="tab" aria-selected="false" aria-controls="builder-tanks" data-builder-category="tanks"><span aria-hidden="true">▤</span> Tanks</button>
+                  <button class="builder-category-tab" type="button" role="tab" aria-selected="false" aria-controls="builder-stages" data-builder-category="stages"><span aria-hidden="true">↕</span> Stages</button>
+                  <button class="builder-category-tab" type="button" role="tab" aria-selected="false" aria-controls="builder-payload" data-builder-category="payload"><span aria-hidden="true">◇</span> Payload</button>
+                  <button class="builder-category-tab" type="button" role="tab" aria-selected="false" aria-controls="builder-systems" data-builder-category="systems"><span aria-hidden="true">⌘</span> Systems</button>
+                </div>
+                <div class="builder-parts-content">
+                  <section class="builder-category is-active" id="builder-engines" role="tabpanel" aria-label="Engine selection">
+                    <p class="builder-section-heading">PROPULSION <span>ENGINE / BOOSTER</span></p>
+                    <div class="engine-catalog">
+                      <button class="engine-card is-selected" type="button" data-engine="rs25" aria-pressed="true">
+                        <span class="engine-card__model engine-card__model--rs25" aria-hidden="true"></span>
+                        <span class="engine-card__name">RS-25 / SSME</span>
+                        <span class="engine-card__facts">Hydrolox · staged combustion · reusable</span>
+                        <span class="engine-card__badge">SPECIFIED</span>
+                      </button>
+                      <button class="engine-card" type="button" data-engine="f1" aria-pressed="false">
+                        <span class="engine-card__model engine-card__model--f1" aria-hidden="true"></span>
+                        <span class="engine-card__name">F-1</span>
+                        <span class="engine-card__facts">LOX/RP-1 · gas generator · Saturn V</span>
+                        <span class="engine-card__badge">SPECIFIED</span>
+                      </button>
+                      <button class="engine-card" type="button" data-engine="raptor3" aria-pressed="false">
+                        <span class="engine-card__model engine-card__model--raptor" aria-hidden="true"></span>
+                        <span class="engine-card__name">Raptor 3</span>
+                        <span class="engine-card__facts">Methalox · full-flow staged combustion</span>
+                        <span class="engine-card__badge">SPECIFIED</span>
+                      </button>
+                      <button class="engine-card" type="button" data-engine="merlin1d" aria-pressed="false">
+                        <span class="engine-card__model engine-card__model--merlin" aria-hidden="true"></span>
+                        <span class="engine-card__name">Merlin 1D</span>
+                        <span class="engine-card__facts">LOX/RP-1 · gas generator · Falcon</span>
+                        <span class="engine-card__badge">SPECIFIED</span>
+                      </button>
+                      <button class="engine-card" type="button" data-engine="be4" aria-pressed="false">
+                        <span class="engine-card__model engine-card__model--be4" aria-hidden="true"></span>
+                        <span class="engine-card__name">BE-4</span>
+                        <span class="engine-card__facts">Methalox · oxygen-rich staged combustion</span>
+                        <span class="engine-card__badge">SPECIFIED</span>
+                      </button>
+                      <button class="engine-card engine-card--booster" type="button" data-engine="sls-srb" aria-pressed="false">
+                        <span class="engine-card__model engine-card__model--srb" aria-hidden="true"></span>
+                        <span class="engine-card__name">SLS solid booster</span>
+                        <span class="engine-card__facts">5-segment · solid propellant · strap-on pair</span>
+                        <span class="engine-card__badge">BOOSTER SYSTEM</span>
+                      </button>
+                    </div>
+                    <label class="part-setting">
+                      <span>Upper-stage engine</span>
+                      <select id="design-upper-engine">
+                        <option value="rs25" selected>RS-25 · LOX/LH₂</option>
+                        <option value="f1">F-1 · LOX/RP-1</option>
+                        <option value="raptor3">Raptor 3 · LOX/CH₄</option>
+                        <option value="merlin1d">Merlin 1D · LOX/RP-1</option>
+                        <option value="be4">BE-4 · LOX/CH₄</option>
+                      </select>
+                    </label>
+                  </section>
+                  <section class="builder-category" id="builder-tanks" role="tabpanel" aria-label="Tank configuration" hidden>
+                    <p class="builder-section-heading">FUEL TANK MODEL <span>VEHICLE STRUCTURE</span></p>
+                    <label class="part-setting">
+                      <span>Tank architecture</span>
+                      <select id="design-tank-model">
+                        <option value="cryo" selected>Smooth cryogenic · domed ends</option>
+                        <option value="reinforced">Reinforced alloy · stiffening rings</option>
+                        <option value="stretch">Long-range stretch · narrow barrel</option>
+                      </select>
+                    </label>
+                    <p class="builder-part-note" id="design-tank-description">Smooth insulated aluminum tanks with rounded pressure-vessel ends, inspired by the reference vehicle.</p>
+                    <p class="builder-section-heading">PROPELLANT CAPACITY <span>PER VEHICLE</span></p>
+                    <label class="part-setting builder-fuel-setting">
+                      <span>Tank capacity <output id="design-fuel-out">500 t</output></span>
+                      <input id="design-fuel" type="range" min="120" max="500" step="10" value="500">
+                      <span class="builder-range-limits"><span>120 t</span><span>500 t</span></span>
+                    </label>
+                    <p class="builder-part-note">Capacity is split between active stages. More propellant increases range and launch mass.</p>
+                  </section>
+                  <section class="builder-category" id="builder-stages" role="tabpanel" aria-label="Stage configuration" hidden>
+                    <p class="builder-section-heading">STACK CONFIGURATION <span>STAGES</span></p>
+                    <label class="part-setting">
+                      <span>Number of stages</span>
+                      <select id="design-stages">
+                        <option value="1">1 stage</option><option value="2" selected>2 stages</option>
+                        <option value="3">3 stages</option>
+                      </select>
+                    </label>
+                    <label class="part-setting">
+                      <span>Engines per stage</span>
+                      <select id="design-engine-count">
+                        <option value="1">1 engine</option><option value="2" selected>2 engines</option>
+                        <option value="3">3 engines</option><option value="4">4 engines</option>
+                      </select>
+                    </label>
+                    <label class="part-setting">
+                      <span>Solid strap-on boosters</span>
+                      <select id="design-boosters">
+                        <option value="0">None</option><option value="2">2 boosters</option>
+                        <option value="4" selected>4 boosters</option>
+                      </select>
+                    </label>
+                    <p class="builder-part-note">Choose stage-joint hardware and the adapter profile between tanks. Stages separate in flight with <kbd>J</kbd>.</p>
+                  </section>
+                  <section class="builder-category" id="builder-payload" role="tabpanel" aria-label="Payload configuration" hidden>
+                    <p class="builder-section-heading">PAYLOAD MODULE <span>CONFIGURATION</span></p>
+                    <label class="part-setting">
+                      <span>Payload type</span>
+                      <select id="design-payload-type">
+                        <option value="crew" selected>Crew capsule + service module</option>
+                        <option value="satellite">Satellite bus + solar arrays</option>
+                        <option value="lander">Lunar lander + landing legs</option>
+                      </select>
+                    </label>
+                    <label class="part-check"><input id="design-fairing" type="checkbox" checked> Payload fairing</label>
+                    <label class="part-setting">
+                      <span>Fairing profile</span>
+                      <select id="design-fairing-style">
+                        <option value="standard" selected>Standard ogive</option>
+                        <option value="long">Extended payload fairing</option>
+                        <option value="wide">Wide-body fairing</option>
+                      </select>
+                    </label>
+                    <label class="part-check"><input id="design-escape-system" type="checkbox" checked> Launch escape tower (crew capsule)</label>
+                    <p class="builder-part-note" id="design-payload-description">Pressurized crew capsule, ablative heat shield, and cylindrical service module.</p>
+                  </section>
+                  <section class="builder-category" id="builder-systems" role="tabpanel" aria-label="Vehicle systems configuration" hidden>
+                    <p class="builder-section-heading">STAGE SEPARATION <span>JOINT</span></p>
+                    <label class="part-setting">
+                      <span>Separation system</span>
+                      <select id="design-separation">
+                        <option value="clamp" selected>Clamp-band ring</option>
+                        <option value="frangible">Frangible joint</option>
+                        <option value="retro">Retro-motor separation</option>
+                      </select>
+                    </label>
+                    <p class="builder-section-heading">INTERSTAGE ADAPTER <span>STRUCTURE</span></p>
+                    <label class="part-setting">
+                      <span>Adapter design</span>
+                      <select id="design-interstage">
+                        <option value="tapered" selected>Tapered shell</option>
+                        <option value="truss">Open truss</option>
+                        <option value="reinforced">Reinforced skirt</option>
+                      </select>
+                    </label>
+                    <p class="builder-section-heading">AVIONICS &amp; RECOVERY <span>FLIGHT SYSTEMS</span></p>
+                    <label class="part-setting">
+                      <span>Flight computer</span>
+                      <select id="design-avionics">
+                        <option value="standard" selected>Guidance + telemetry</option>
+                        <option value="redundant">Redundant avionics bay</option>
+                      </select>
+                    </label>
+                    <label class="part-setting">
+                      <span>Recovery package</span>
+                      <select id="design-recovery">
+                        <option value="parachutes" selected>Capsule parachutes</option>
+                        <option value="powered">Powered landing system</option>
+                        <option value="none">No recovery hardware</option>
+                      </select>
+                    </label>
+                    <p class="builder-part-note">The model shows the selected joints, adapter, antennas, and recovery hardware where externally visible.</p>
+                  </section>
+                </div>
+              </aside>
+              <main class="workshop__preview">
+                <div class="builder-canvas-label"><span>BLUEPRINT VIEW</span><span id="builder-stage-label">2 STAGES · 2× RS-25</span></div>
+                <canvas id="rocket-preview" class="rocket-preview" width="780" height="1140"
+                        role="img" aria-label="Side view of the configured multistage rocket"></canvas>
+                <div class="builder-canvas-hint">DRAG TO TILT <span>·</span> SCROLL TO ZOOM</div>
+              </main>
+              <div class="builder-view-tools" aria-label="Vehicle view controls">
+                <button class="builder-icon-button" type="button" data-preview-zoom="in" aria-label="Zoom in" title="Zoom in">+</button>
+                <button class="builder-icon-button" type="button" data-preview-zoom="out" aria-label="Zoom out" title="Zoom out">−</button>
+                <span class="builder-tool-divider"></span>
+                <button class="builder-icon-button" type="button" data-preview-rotate="left" aria-label="Tilt vehicle left" title="Tilt left">↶</button>
+                <button class="builder-icon-button" type="button" data-preview-rotate="right" aria-label="Tilt vehicle right" title="Tilt right">↷</button>
+                <button class="builder-icon-button" type="button" data-preview-reset aria-label="Reset vehicle view" title="Reset view">⌂</button>
+              </div>
+            </div>
+            <footer class="builder-statusbar">
+              <div class="builder-status-readouts">
+                <div><span>THRUST / WEIGHT</span><b id="design-twr">—</b></div>
+                <div><span>LAUNCH MASS</span><b id="design-mass">—</b></div>
+                <div><span>DELTA-V</span><b id="design-dv">—</b></div>
+                <div><span>PROPELLANT</span><b id="design-loaded-fuel">—</b></div>
+              </div>
+              <div class="builder-status-actions">
+                <p id="design-status" class="design-status" role="status"></p>
+                <button class="btn btn--primary workshop__launch" id="btn-launch-rocket" type="button">LAUNCH ROCKET <span aria-hidden="true">→</span></button>
+              </div>
+            </footer>
+            <p class="workshop__hint">Flight controls: <kbd>W</kbd>/<kbd>S</kbd> throttle · arrows pitch/yaw · <kbd>Q</kbd>/<kbd>E</kbd> roll · <kbd>J</kbd> stage · <kbd>P</kbd> pause. Ascent models atmospheric drag; interplanetary cruise is not simulated.</p>
+          </section>
+
+          <section id="mission-select" class="mission-select" hidden>
+            <h2 class="mission-select__title">Available Missions</h2>
+            <ul id="mission-list" class="mission-list"></ul>
+          </section>
+
+          <section id="settings-panel" class="settings" hidden>
+            <h2 class="mission-select__title">Settings</h2>
+
+            <label class="field">
+              <span class="field__label">Time warp ceiling</span>
+              <input type="range" id="opt-max-warp" min="1" max="5" step="1" value="5">
+              <output id="out-max-warp" class="field__out">1000&times;</output>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Trajectory prediction length</span>
+              <input type="range" id="opt-prediction" min="0" max="100" step="5" value="60">
+              <output id="out-prediction" class="field__out">60%</output>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Field of view</span>
+              <input type="range" id="opt-fov" min="45" max="100" step="1" value="70">
+              <output id="out-fov" class="field__out">70&deg;</output>
+            </label>
+
+            <label class="field field--check">
+              <input type="checkbox" id="opt-invert-pitch">
+              <span>Invert pitch axis</span>
+            </label>
+            <label class="field field--check">
+              <input type="checkbox" id="opt-show-trails" checked>
+              <span>Draw orbit trails</span>
+            </label>
+            <label class="field field--check">
+              <input type="checkbox" id="opt-hud-toggles">
+              <span>Reduced motion (disable camera shake)</span>
+            </label>
+          </section>
+        </div>
+      </div>
+<!-- ===================================================================
+     GAME SCREEN — canvas plus HUD overlay
+     =================================================================== -->
+      <div id="game-screen" class="screen screen--game">
+
+  <!-- 3D viewport: the software renderer paints here -->
+        <canvas id="viewport" class="viewport" aria-label="Spacecraft view"></canvas>
+
+  <!-- Heads-up display -->
+        <div id="hud" class="hud">
+
+    <!-- Top-left: flight instruments -->
+          <section class="hud__panel hud__panel--tl" aria-label="Flight data">
+            <h2 class="hud__title">FLIGHT DATA</h2>
+            <dl class="readout">
+              <div class="readout__row">
+                <dt>SPEED</dt><dd id="ro-speed" class="readout__val">0 m/s</dd>
+              </div>
+              <div class="readout__row">
+                <dt>REL SPEED</dt><dd id="ro-relspeed" class="readout__val">0 m/s</dd>
+              </div>
+              <div class="readout__row">
+                <dt>ALTITUDE</dt><dd id="ro-altitude" class="readout__val">---</dd>
+              </div>
+              <div class="readout__row">
+                <dt>ACCEL</dt><dd id="ro-accel" class="readout__val">0.00 m/s&sup2;</dd>
+              </div>
+              <div class="readout__row">
+                <dt>MASS</dt><dd id="ro-mass" class="readout__val">0 kg</dd>
+              </div>
+            </dl>
+
+            <h2 class="hud__title hud__title--sub">ORBIT</h2>
+            <dl class="readout">
+              <div class="readout__row">
+                <dt>APOAPSIS</dt><dd id="ro-apoapsis" class="readout__val">---</dd>
+              </div>
+              <div class="readout__row">
+                <dt>PERIAPSIS</dt><dd id="ro-periapsis" class="readout__val">---</dd>
+              </div>
+              <div class="readout__row">
+                <dt>PERIOD</dt><dd id="ro-period" class="readout__val">---</dd>
+              </div>
+              <div class="readout__row">
+                <dt>ECC</dt><dd id="ro-ecc" class="readout__val">---</dd>
+              </div>
+            </dl>
+          </section>
+
+    <!-- Top-centre: mission status -->
+          <section class="hud__panel hud__panel--tc" aria-label="Mission status">
+            <div class="mission-hud">
+              <span id="hud-mission-name" class="mission-hud__name">—</span>
+              <span id="hud-mission-step" class="mission-hud__step">—</span>
+            </div>
+            <ol id="hud-objectives" class="objectives"></ol>
+          </section>
+
+    <!-- Top-right: target + map -->
+          <section class="hud__panel hud__panel--tr" aria-label="Target and map">
+            <h2 class="hud__title">TARGET</h2>
+            <dl class="readout">
+              <div class="readout__row">
+                <dt>NOMINAL</dt><dd id="ro-target-name" class="readout__val">—</dd>
+              </div>
+              <div class="readout__row">
+                <dt>RANGE</dt><dd id="ro-target-range" class="readout__val">---</dd>
+              </div>
+              <div class="readout__row">
+                <dt>CLOSURE</dt><dd id="ro-target-closure" class="readout__val">---</dd>
+              </div>
+              <div class="readout__row">
+                <dt>&Delta;V REQD</dt><dd id="ro-target-dv" class="readout__val">---</dd>
+              </div>
+            </dl>
+            <div class="map">
+              <canvas id="map-canvas" class="map__canvas" width="260" height="260"
+                      aria-label="Orbital map"></canvas>
+            </div>
+          </section>
+
+    <!-- Bottom-left: propulsion -->
+          <section class="hud__panel hud__panel--bl" aria-label="Propulsion">
+            <h2 class="hud__title">PROPULSION</h2>
+            <div class="thrust">
+              <div id="thrust-bar" class="thrust__bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="thrust-bar-fill" class="thrust__fill"></div>
+                <span id="thrust-bar-label" class="thrust__label">0%</span>
+              </div>
+            </div>
+            <dl class="readout">
+              <div class="readout__row">
+                <dt>THRUST</dt><dd id="ro-thrust" class="readout__val">0 N</dd>
+              </div>
+              <div class="readout__row">
+                <dt>FUEL</dt><dd id="ro-fuel" class="readout__val">100%</dd>
+              </div>
+              <div class="readout__row">
+                <dt>&Delta;V LEFT</dt><dd id="ro-dv" class="readout__val">---</dd>
+              </div>
+            </dl>
+            <div id="fuel-gauge" class="fuel"><div id="fuel-fill" class="fuel__fill"></div></div>
+          </section>
+
+    <!-- Bottom-centre: navball + attitude -->
+          <section class="hud__panel hud__panel--bc" aria-label="Attitude">
+            <canvas id="navball" class="navball" width="260" height="260"
+                    aria-label="Attitude ball"></canvas>
+            <div class="attitude-readout">
+              <span>PCH <b id="ro-pitch">0&deg;</b></span>
+              <span>HDG <b id="ro-heading">0&deg;</b></span>
+              <span>ROL <b id="ro-roll">0&deg;</b></span>
+            </div>
+          </section>
+<!-- Bottom-right: time warp + controls -->
+          <section class="hud__panel hud__panel--br" aria-label="Time and controls">
+            <h2 class="hud__title">TIME</h2>
+            <div class="warp">
+              <div id="warp-indicator" class="warp__value">1&times;</div>
+              <div class="warp__scale">
+                <span class="warp__step" data-warp="1">1</span>
+                <span class="warp__step" data-warp="10">10</span>
+                <span class="warp__step" data-warp="100">100</span>
+                <span class="warp__step" data-warp="1000">1k</span>
+                <span class="warp__step" data-warp="10000">10k</span>
+              </div>
+            </div>
+            <h2 class="hud__title hud__title--sub">CAMERA</h2>
+            <div class="viewmodes" role="group" aria-label="Flight camera mode">
+              <button type="button" data-camera-mode="chase" aria-pressed="true"><kbd>1</kbd> Chase</button>
+              <button type="button" data-camera-mode="close" aria-pressed="false"><kbd>2</kbd> Close</button>
+              <button type="button" data-camera-mode="planet" aria-pressed="false"><kbd>3</kbd> Planet</button>
+              <button type="button" data-camera-mode="center" aria-pressed="false"><kbd>4</kbd> Center</button>
+            </div>
+          </section>
+
+          <section class="flight-controls" aria-label="Touch flight controls">
+            <h2 class="hud__title">FLIGHT CONTROL</h2>
+            <label class="flight-controls__throttle" for="flight-throttle">
+              THROTTLE <output id="flight-throttle-out" for="flight-throttle">0%</output>
+              <input id="flight-throttle" type="range" min="0" max="100" step="1" value="0">
+            </label>
+            <div class="flight-pad" role="group" aria-label="Hold to steer">
+              <button type="button" data-control="ArrowUp" aria-label="Pitch up">▲</button>
+              <button type="button" data-control="KeyA" aria-label="Yaw left">◀</button>
+              <button type="button" data-control="ArrowDown" aria-label="Pitch down">▼</button>
+              <button type="button" data-control="KeyD" aria-label="Yaw right">▶</button>
+              <button type="button" data-control="KeyQ" aria-label="Roll left">↶</button>
+              <button type="button" data-control="KeyE" aria-label="Roll right">↷</button>
+            </div>
+            <p id="flight-stage" class="flight-controls__stage">STAGE 1 / 1</p>
+            <button id="btn-stage" class="stage-button" type="button" disabled>Stage <kbd>J</kbd></button>
+          </section>
+
+    <!-- Message log / comms -->
+          <section class="hud__panel hud__panel--log" aria-label="Comms log">
+            <h2 class="hud__title">FLIGHT LOG</h2>
+            <ul id="comm-log" class="commlog" aria-live="polite"></ul>
+          </section>
+
+    <!-- Central alert banner -->
+          <div id="alert-banner" class="alert" role="alert" aria-live="assertive"></div>
+
+    <!-- Velocity / target markers are drawn into the viewport overlay -->
+          <canvas id="overlay-canvas" class="overlay-canvas" aria-hidden="true"></canvas>
+        </div>
+
+  <!-- Camera mode banner -->
+        <div id="camera-label" class="camera-label">CHASE</div>
+      </div>
+
+<!-- ===================================================================
+     PAUSE OVERLAY
+     =================================================================== -->
+      <div id="pause-screen" class="screen screen--modal">
+        <div class="modal">
+          <h2 class="modal__title">PAUSED</h2>
+          <div class="modal__actions">
+            <button class="btn btn--primary" id="btn-resume" type="button">Resume</button>
+            <button class="btn" id="btn-pause-help" type="button">Controls</button>
+            <button class="btn btn--danger" id="btn-abort" type="button">Abort Mission</button>
+          </div>
+          <p class="modal__hint">Press <kbd>P</kbd> or <kbd>Esc</kbd> to resume.</p>
+        </div>
+      </div>
+
+<!-- ===================================================================
+     HELP / CONTROLS
+     =================================================================== -->
+      <div id="help-screen" class="screen screen--modal">
+        <div class="modal modal--wide">
+          <h2 class="modal__title">CONTROLS &amp; PHYSICS</h2>
+          <div class="help__grid">
+            <div>
+              <h3>Flight</h3>
+              <table class="keys">
+                <tr><td><kbd>W</kbd> / <kbd>S</kbd></td><td>Main engine forward / reverse</td></tr>
+                <tr><td><kbd>A</kbd> / <kbd>D</kbd></td><td>Yaw left / right</td></tr>
+                <tr><td><kbd>&uarr;</kbd> / <kbd>&darr;</kbd></td><td>Pitch up / down</td></tr>
+                <tr><td><kbd>Q</kbd> / <kbd>E</kbd></td><td>Roll left / right</td></tr>
+                <tr><td><kbd>Shift</kbd>+<kbd>W</kbd></td><td>Afterburner (6&times; burn rate)</td></tr>
+                <tr><td><kbd>X</kbd></td><td>Full stop (auto-hold RCS burn)</td></tr>
+                <tr><td><kbd>Space</kbd></td><td>Match target velocity (rel. null burn)</td></tr>
+                <tr><td><kbd>Z</kbd> / <kbd>C</kbd></td><td>Retrograde / prograde assist burn</td></tr>
+              </table>
+
+              <h3>Systems</h3>
+              <table class="keys">
+                <tr><td><kbd>Tab</kbd></td><td>Cycle nav target</td></tr>
+                <tr><td><kbd>,</kbd> / <kbd>.</kbd></td><td>Time warp down / up</td></tr>
+                <tr><td><kbd>1</kbd>&ndash;<kbd>4</kbd></td><td>Camera: chase / cockpit / orbit / target</td></tr>
+                <tr><td><kbd>P</kbd> / <kbd>Esc</kbd></td><td>Pause</td></tr>
+                <tr><td><kbd>M</kbd></td><td>Mute audio</td></tr>
+              </table>
+            </div>
+            <div>
+              <h3>How the physics works</h3>
+              <p>
+                This game integrates <b>Newton's second law</b> for every body:
+                <code>a = F/m</code>. Nothing is scripted &mdash; burn prograde and you
+                accelerate prograde; coast and you keep your momentum forever.
+              </p>
+              <ul class="phys">
+                <li><b>Gravity</b> uses the inverse-square law
+                  <code>a = &mu;r / |r|&sup3;</code>, with each body's real
+                  gravitational parameter <code>&mu; = GM</code>.</li>
+                <li><b>No drag in vacuum.</b> There is no artificial "space slowdown"
+                  &mdash; velocity persists exactly as the first law requires.</li>
+                <li><b>Fixed timestep.</b> Physics runs at a fixed 120 Hz sub-step
+                  behind an accumulator, so results are identical at any refresh rate.</li>
+                <li><b>Rotation</b> uses a real inertia tensor
+                  (<code>&tau; = I&alpha;</code>) with quaternion integration, so
+                  torque, gyroscopic precession and angular momentum all behave
+                  correctly.</li>
+                <li><b>Collisions</b> resolve as impulses that conserve momentum along
+                  the contact normal, with a restitution coefficient for bounce.</li>
+                <li><b>Orbits emerge</b> from the integration. The predicted path runs
+                  the <i>same</i> integrator forward in time, so the overlay cannot
+                  lie to you.</li>
+              </ul>
+              <p class="phys__note">
+                Fuel is finite and the rocket equation is real:
+                <code>&Delta;v = I<sub>sp</sub>&middot;ln(m<sub>0</sub>/m<sub>1</sub>)</code>.
+                Choose your burns carefully.
+              </p>
+            </div>
+          </div>
+
+          <div class="modal__actions">
+            <button class="btn btn--primary" id="btn-help-close" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+
+<!-- ===================================================================
+     MISSION RESULT
+     =================================================================== -->
+      <div id="result-screen" class="screen screen--modal">
+        <div class="modal">
+          <h2 id="result-title" class="modal__title">MISSION COMPLETE</h2>
+          <p id="result-subtitle" class="modal__subtitle">—</p>
+          <dl id="result-stats" class="result-stats"></dl>
+          <div class="modal__actions">
+            <button class="btn btn--primary" id="btn-result-retry" type="button">Retry</button>
+            <button class="btn btn--primary" id="btn-continue-mission" type="button" hidden>Continue to mission</button>
+            <button class="btn" id="btn-result-menu" type="button">Mission Select</button>
+          </div>
+        </div>
+      </div>
+
+<!-- Cinematic fade overlay -->
+      <div id="fade-overlay" class="fade" aria-hidden="true"></div>
+
+    </template>
+
+<!-- ===================================================================
+     SCRIPTS — ES module entry point
+     =================================================================== -->
+    <script type="module" src="js/main.js?v=flight-dashboard-replica-20261111"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

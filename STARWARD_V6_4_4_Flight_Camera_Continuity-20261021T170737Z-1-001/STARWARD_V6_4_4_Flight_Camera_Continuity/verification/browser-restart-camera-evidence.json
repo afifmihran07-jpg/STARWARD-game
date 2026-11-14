@@ -1,0 +1,33 @@
+{
+  "firstLaunch": {
+    "build": "STARWARD-FLIGHT-REFINEMENT-20261016-V6.4.2",
+    "mode": "FLIGHT",
+    "alt": 37.61429732375549,
+    "fuel": 38918.27437932059,
+    "zoom": 2.785870486681862
+  },
+  "cameraSwitch": {
+    "mode": "FLIGHT",
+    "zoom": 2.750505935962609,
+    "screen": {
+      "x": 720,
+      "y": 377.9997491717999
+    }
+  },
+  "reset": {
+    "mode": "BUILD",
+    "rocket": false,
+    "deployed": false,
+    "ops": false,
+    "flash": false
+  },
+  "relaunch": {
+    "mode": "FLIGHT",
+    "alt": 2.1945112393950694e-10,
+    "fuel": 40000,
+    "crashed": false
+  },
+  "consoleErrors": [],
+  "failedRequests": [],
+  "requestCount": 124
+}

@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "testedArtifact": "STARWARD_V6_4_2_Flight_Experience_Refinement.zip extracted to a clean directory",
+  "buildId": "STARWARD-FLIGHT-REFINEMENT-20261016-V6.4.2",
+  "viewport": "1440x900",
+  "resourceRequests": 124,
+  "failedRequests": 0,
+  "consoleErrors": 0,
+  "pageErrors": 0,
+  "interaction": "Clicked Launch Vehicle, set throttle to 100%, activated the first stage, then sampled the live flight after 2.5 seconds.",
+  "sample": {
+    "mode": "FLIGHT",
+    "altitudeMeters": 84.56,
+    "speedMetersPerSecond": 79.09,
+    "fuelKg": 38381.89,
+    "zoom": 2.05969,
+    "planetReveal": 0,
+    "crashed": false
+  },
+  "limitation": "Short post-package launch smoke test only; not a full ascent or orbital-insertion test. Browser navigation to localhost was blocked by environment policy, so resource requests were intercepted and fulfilled from the extracted package files."
+}

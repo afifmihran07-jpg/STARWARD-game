@@ -1,0 +1,659 @@
+{
+  "build_id": "STARWARD-FLIGHT-REALISM-20261016-V6.4.3",
+  "errors": [],
+  "failed_requests": [],
+  "not_found": [],
+  "samples": [
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 298.96644597505065,
+      "speed_mps": 131.19392731144436,
+      "radial_mps": 131.19392731134212,
+      "tangential_mps": 0.0001637739271898647,
+      "angle_rad": 1.0631155436918082e-07,
+      "mass_kg": 44391.22088123043,
+      "fuel_kg": 37221.22088123043,
+      "thrust_N": 1741699.0138943417,
+      "g_force": 3.9359832450784324,
+      "dynamic_pressure_Pa": 10080.425765425145,
+      "max_q_Pa": 10080.425765425145,
+      "max_q_altitude_m": 318.4982256460935,
+      "mach": 0.3855108627184858,
+      "apoapsis_altitude_m": 1693.8811905011535,
+      "periapsis_altitude_m": -6370999.999999998,
+      "eccentricity": 0.9999999999999996,
+      "bound": true,
+      "phase": "POWERED_ASCENT",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 1.0561350073029492,
+      "reveal": 0,
+      "orbit_verified": false,
+      "simSeconds": 5
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 1903.3256026785534,
+      "speed_mps": 323.3452711225226,
+      "radial_mps": 323.2856712007996,
+      "tangential_mps": 6.2079911039067985,
+      "angle_rad": 0.06946429111516741,
+      "mass_kg": 40483.149350764405,
+      "fuel_kg": 33313.149350764405,
+      "thrust_N": 1588364.5094989857,
+      "g_force": 3.6434272377610677,
+      "dynamic_pressure_Pa": 50955.24316209159,
+      "max_q_Pa": 50955.24316209159,
+      "max_q_altitude_m": 1919.8450058475137,
+      "mach": 0.9701721928090195,
+      "apoapsis_altitude_m": 7751.700090162456,
+      "periapsis_altitude_m": -6370998.036223319,
+      "eccentricity": 0.9999993842757429,
+      "bound": true,
+      "phase": "POWERED_ASCENT",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 0.23200701229974216,
+      "reveal": 5.940779456902154e-05,
+      "orbit_verified": false,
+      "simSeconds": 12
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 5273.851985135773,
+      "speed_mps": 515.6508732795833,
+      "radial_mps": 513.8464051174437,
+      "tangential_mps": 43.100986785417184,
+      "angle_rad": 0.18189454669454805,
+      "mass_kg": 36444.494347950895,
+      "fuel_kg": 29274.49434795089,
+      "thrust_N": 1429906.1540483064,
+      "g_force": 3.312443592440017,
+      "dynamic_pressure_Pa": 87305.48075569341,
+      "max_q_Pa": 87305.48075569341,
+      "max_q_altitude_m": 5287.262612546794,
+      "mach": 1.6134894145791012,
+      "apoapsis_altitude_m": 19289.60628128983,
+      "periapsis_altitude_m": -6370905.238943752,
+      "eccentricity": 0.9999703426113984,
+      "bound": true,
+      "phase": "POWERED_ASCENT",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 0.09064735887939665,
+      "reveal": 0.005071651833331422,
+      "orbit_verified": false,
+      "simSeconds": 20
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 30231.824714512222,
+      "speed_mps": 1215.109073234462,
+      "radial_mps": 1162.0207265286629,
+      "tangential_mps": 355.243424956059,
+      "angle_rad": 0.40643260245358875,
+      "mass_kg": 24679.055675527077,
+      "fuel_kg": 17509.055675527077,
+      "thrust_N": 968282.6212723842,
+      "g_force": 3.6987170693440143,
+      "dynamic_pressure_Pa": 25782.06074698621,
+      "max_q_Pa": 92178.34466695186,
+      "max_q_altitude_m": 7695.623549546115,
+      "mach": 4.022652045887561,
+      "apoapsis_altitude_m": 101070.56505764183,
+      "periapsis_altitude_m": -6364505.744279,
+      "eccentricity": 0.9979951560567332,
+      "bound": true,
+      "phase": "POWERED_ASCENT",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        },
+        {
+          "type": "MAX_Q",
+          "time": 24.2999999999999,
+          "altitude": 7695.623549546115,
+          "dynamicPressure": 92178.34466695186
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 0.0044725578562836025,
+      "reveal": 0.23837912225395644,
+      "orbit_verified": false,
+      "simSeconds": 50
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 65055.93765486119,
+      "speed_mps": 1845.4861296132726,
+      "radial_mps": 1524.0488805167986,
+      "tangential_mps": 1040.7180523035381,
+      "angle_rad": 1.2222548548532215,
+      "mass_kg": 17982.890323946085,
+      "fuel_kg": 10812.890323946087,
+      "thrust_N": 705554.2844505564,
+      "g_force": 3.975601244717727,
+      "dynamic_pressure_Pa": 992.3297419812815,
+      "max_q_Pa": 92178.34466695186,
+      "max_q_altitude_m": 7695.623549546115,
+      "mach": 6.050886327927033,
+      "apoapsis_altitude_m": 190778.88368056063,
+      "periapsis_altitude_m": -6314224.834304527,
+      "eccentricity": 0.9828436346452969,
+      "bound": true,
+      "phase": "POWERED_ASCENT",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        },
+        {
+          "type": "MAX_Q",
+          "time": 24.2999999999999,
+          "altitude": 7695.623549546115,
+          "dynamicPressure": 92178.34466695186
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 0.00012413485026364581,
+      "reveal": 0.7868609609460812,
+      "orbit_verified": false,
+      "simSeconds": 75
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 176310.7762168159,
+      "speed_mps": 4075.0112821584676,
+      "radial_mps": 1033.3919525123931,
+      "tangential_mps": 3941.8039045849832,
+      "angle_rad": 1.5676248902248104,
+      "mass_kg": 7170,
+      "fuel_kg": 0,
+      "thrust_N": 0,
+      "g_force": 0,
+      "dynamic_pressure_Pa": 0,
+      "max_q_Pa": 92178.34466695186,
+      "max_q_altitude_m": 7695.623549546115,
+      "mach": 0,
+      "apoapsis_altitude_m": 254711.7575561814,
+      "periapsis_altitude_m": -5414731.602786856,
+      "eccentricity": 0.7477523344316278,
+      "bound": true,
+      "phase": "COASTING",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        },
+        {
+          "type": "MAX_Q",
+          "time": 24.2999999999999,
+          "altitude": 7695.623549546115,
+          "dynamicPressure": 92178.34466695186
+        },
+        {
+          "type": "ENGINE_CUTOFF",
+          "time": 150.53333333334527,
+          "altitude": 166225.8296761429,
+          "reason": "PROPELLANT_DEPLETED",
+          "stageIndex": 0
+        },
+        {
+          "type": "COAST_INITIATED",
+          "time": 150.53333333334527,
+          "altitude": 166226.22382127398,
+          "apoapsis": 6625714.643709282,
+          "periapsis": 956268.2936658259
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 3.665694738879923e-05,
+      "reveal": 1,
+      "orbit_verified": false,
+      "simSeconds": 160
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 254111.4269224867,
+      "speed_mps": 3896.4752337461155,
+      "radial_mps": 75.97512002459474,
+      "tangential_mps": 3895.7344658400543,
+      "angle_rad": 1.5676248902248104,
+      "mass_kg": 7170,
+      "fuel_kg": 0,
+      "thrust_N": 0,
+      "g_force": 0,
+      "dynamic_pressure_Pa": 0,
+      "max_q_Pa": 92178.34466695186,
+      "max_q_altitude_m": 7695.623549546115,
+      "mach": 0,
+      "apoapsis_altitude_m": 254685.05822678003,
+      "periapsis_altitude_m": -5414732.739344272,
+      "eccentricity": 0.7477517081519525,
+      "bound": true,
+      "phase": "COASTING",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        },
+        {
+          "type": "MAX_Q",
+          "time": 24.2999999999999,
+          "altitude": 7695.623549546115,
+          "dynamicPressure": 92178.34466695186
+        },
+        {
+          "type": "ENGINE_CUTOFF",
+          "time": 150.53333333334527,
+          "altitude": 166225.8296761429,
+          "reason": "PROPELLANT_DEPLETED",
+          "stageIndex": 0
+        },
+        {
+          "type": "COAST_INITIATED",
+          "time": 150.53333333334527,
+          "altitude": 166226.22382127398,
+          "apoapsis": 6625714.643709282,
+          "periapsis": 956268.2936658259
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 3.622585757949789e-05,
+      "reveal": 1,
+      "orbit_verified": false,
+      "simSeconds": 300
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 246585.16034850964,
+      "speed_mps": 3914.325648808793,
+      "radial_mps": -331.6875724061987,
+      "tangential_mps": 3900.2472536024766,
+      "angle_rad": 1.5676248902248104,
+      "mass_kg": 7170,
+      "fuel_kg": 0,
+      "thrust_N": 0,
+      "g_force": 0,
+      "dynamic_pressure_Pa": 0,
+      "max_q_Pa": 92178.34466695186,
+      "max_q_altitude_m": 7695.623549546115,
+      "mach": 0,
+      "apoapsis_altitude_m": 254682.0226570731,
+      "periapsis_altitude_m": -5414734.735294846,
+      "eccentricity": 0.7477520672561044,
+      "bound": true,
+      "phase": "COASTING",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        },
+        {
+          "type": "MAX_Q",
+          "time": 24.2999999999999,
+          "altitude": 7695.623549546115,
+          "dynamicPressure": 92178.34466695186
+        },
+        {
+          "type": "ENGINE_CUTOFF",
+          "time": 150.53333333334527,
+          "altitude": 166225.8296761429,
+          "reason": "PROPELLANT_DEPLETED",
+          "stageIndex": 0
+        },
+        {
+          "type": "COAST_INITIATED",
+          "time": 150.53333333334527,
+          "altitude": 166226.22382127398,
+          "apoapsis": 6625714.643709282,
+          "periapsis": 956268.2936658259
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 3.6266794122406276e-05,
+      "reveal": 1,
+      "orbit_verified": false,
+      "simSeconds": 360
+    },
+    {
+      "mode": "FLIGHT",
+      "altitude_m": 206532.22600828187,
+      "speed_mps": 4006.6652730948076,
+      "radial_mps": -810.0598599439747,
+      "tangential_mps": 3923.9227354691175,
+      "angle_rad": 1.5676248902248104,
+      "mass_kg": 7170,
+      "fuel_kg": 0,
+      "thrust_N": 0,
+      "g_force": 0,
+      "dynamic_pressure_Pa": 0,
+      "max_q_Pa": 92178.34466695186,
+      "max_q_altitude_m": 7695.623549546115,
+      "mach": 0,
+      "apoapsis_altitude_m": 254684.4853954902,
+      "periapsis_altitude_m": -5414738.246214091,
+      "eccentricity": 0.7477529585097258,
+      "bound": true,
+      "phase": "COASTING",
+      "events": [
+        {
+          "type": "LAUNCH_PREPARATION",
+          "time": 0,
+          "altitude": 0
+        },
+        {
+          "type": "IGNITION_COMMAND",
+          "time": 0,
+          "altitude": 1.8626167275215266e-10,
+          "trigger": "MANUAL"
+        },
+        {
+          "type": "IGNITION",
+          "time": 0.016666666666666666,
+          "altitude": 1.8626167275215266e-10
+        },
+        {
+          "type": "LIFTOFF",
+          "time": 0.13333333333333333,
+          "altitude": 21.718344658613205
+        },
+        {
+          "type": "LAUNCH_STRUCTURE_CLEARANCE",
+          "time": 3.0833333333333273,
+          "altitude": 100.19785896457293
+        },
+        {
+          "type": "GRAVITY_TURN_INITIATED",
+          "time": 10.550000000000104,
+          "altitude": 1461.6701449295106
+        },
+        {
+          "type": "MAX_Q",
+          "time": 24.2999999999999,
+          "altitude": 7695.623549546115,
+          "dynamicPressure": 92178.34466695186
+        },
+        {
+          "type": "ENGINE_CUTOFF",
+          "time": 150.53333333334527,
+          "altitude": 166225.8296761429,
+          "reason": "PROPELLANT_DEPLETED",
+          "stageIndex": 0
+        },
+        {
+          "type": "COAST_INITIATED",
+          "time": 150.53333333334527,
+          "altitude": 166226.22382127398,
+          "apoapsis": 6625714.643709282,
+          "periapsis": 956268.2936658259
+        }
+      ],
+      "crashed": false,
+      "landed": false,
+      "zoom": 3.648732243835922e-05,
+      "reveal": 1,
+      "orbit_verified": false,
+      "simSeconds": 430
+    }
+  ],
+  "screenshots": [
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_5s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_12s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_20s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_50s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_75s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_160s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_300s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_360s.png",
+    "/mnt/data/STARWARD_V6_4_3_browser_flight_430s.png"
+  ],
+  "test_method": "Chromium executed actual V6.4.3 app assets with HTTP-style request interception. UI click launched/ignited the starter. Game.update drove flight through burnout; the same shipped physics/orbit modules then advanced the vehicle in 1/60 s steps through apogee and descent. Camera profile/easing updated each simulated step.",
+  "game_ready": true,
+  "launch_state": {
+    "mode": "FLIGHT",
+    "stage": 0,
+    "throttle": 1,
+    "autoGuidance": true,
+    "initialMassKg": 47170,
+    "initialFuelKg": 40000,
+    "configuredThrustN": 2240000,
+    "idealDeltaV_mps": 6096.512913827602
+  },
+  "hud_text": "STARWARD FLIGHT WORKSHOP\nBUILD\nFLIGHT\nSYSTEM MAP\nNEW\nSTARTER ROCKET\nSAVE\nLOAD\nF3 DEBUG\nFLIGHT COMPUTER\nCOASTING \u00b7 SUBORBITAL\nALTITUDE\n206.5 km\nENVIRONMENT\nVACUUM\nVELOCITY\n4007 m/s\nMACH\nN/A \u00b7 VACUUM\nDYN PRESSURE\n0 Pa\nMAX-Q\n92.2 kPa @ 7.7 km\nG-FORCE\n0.0 g\nAPOAPSIS\n254.7 km\nPERIAPSIS\nBODY INTERSECTION\nFUEL\n0 / 40000 kg\nMASS\n7.17 t\nTHRUST\n0 N\nTWR\n0.00\n\u0394V LEFT\n0 m/s\nSTAGE\n1 / 1\nSAS\nON [T]\nGUIDANCE\nAUTO GRAVITY TURN [G]\nFLIGHT PHASE\nCOASTING\nWARP\n1\u00d7\nPRIMARY\nEarth\nENGINES\n3 fitted\nTHROTTLE\n0%\nSTAGE 1 [SPACE]\nMAP [M]\nTIME WARP\n\u2212\n1\u00d7\n+\nPAUSE [P]\nACTIVE MISSION\nAltitude Trial\n\nReach an altitude of 10 km.\n\n100% objective \u00b7 COMPLETE \u00b7 FLIGHT CONTINUES UNTIL ORBIT/DEPLOYMENT\nNEXT MISSION\nPOST-LAUNCH OPERATIONS\nEarth observation\n\nAwaiting spacecraft deployment in a verified orbit\n\nPOWER\n0 now / 0 max gen \u00b7 0 load\nBATTERY\nNo battery fitted\nSCIENCE\nINSUFFICIENT\nDATA\n0.000 MB stored\nDOWNLINK\n0.000 MB downlinked\nDEPLOY SPACECRAFT\nSCIENCE: OFF\nDOWNLINK DATA\nEVALUATE MISSION\nNo mission events yet\n\nNormalized gameplay power/data units; downlink uses a simplified range model, not an RF link budget. Deployment requires an upper payload stage containing a command core and mission hardware, separated from the launch vehicle by a stage joint. Lunar/planetary transfers are not implemented.\n\n?"
+}

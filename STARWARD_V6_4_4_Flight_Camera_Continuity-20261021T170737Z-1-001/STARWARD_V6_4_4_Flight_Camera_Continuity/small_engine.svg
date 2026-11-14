@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="engBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5b87a"/>
+      <stop offset="100%" stop-color="#c97a3a"/>
+    </linearGradient>
+    <linearGradient id="engNoz" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7e8992"/>
+      <stop offset="100%" stop-color="#4e5962"/>
+    </linearGradient>
+    <linearGradient id="engFlame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0a33a"/>
+      <stop offset="100%" stop-color="#7a3d10"/>
+    </linearGradient>
+    <radialGradient id="engBell" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c5ccd1"/>
+      <stop offset="100%" stop-color="#8a9299"/>
+    </radialGradient>
+  </defs>
+  <g stroke="#17202a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="none">
+    <path d="M32 18 H68 L64 50 L58 62 H42 L36 50 Z" fill="url(#engBody)"/>
+    <path d="M42 62 H58 L62 84 H38 Z" fill="url(#engNoz)"/>
+    <path d="M44 78 H56 L61 94 H39 Z" fill="url(#engFlame)"/>
+    <circle cx="50" cy="39" r="8" fill="url(#engBell)"/>
+  </g>
+</svg>

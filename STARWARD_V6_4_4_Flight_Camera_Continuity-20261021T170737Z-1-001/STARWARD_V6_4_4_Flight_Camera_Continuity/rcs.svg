@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="rcsBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9aa5ad"/>
+      <stop offset="100%" stop-color="#5a636b"/>
+    </linearGradient>
+    <linearGradient id="rcsThruster" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5a636b"/>
+      <stop offset="100%" stop-color="#3a434b"/>
+    </linearGradient>
+    <linearGradient id="rcsFlame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5d07a"/>
+      <stop offset="100%" stop-color="#c9942a"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#17202a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="none">
+    <rect x="32" y="30" width="36" height="40" rx="5" fill="url(#rcsBody)"/>
+    <path d="M32 40 L15 30 L15 38 L29 47 Z" fill="url(#rcsThruster)"/>
+    <path d="M68 40 L85 30 L85 38 L71 47 Z" fill="url(#rcsThruster)"/>
+    <path d="M18 27 L8 20 L14 34 Z" fill="url(#rcsFlame)"/>
+    <path d="M82 27 L92 20 L86 34 Z" fill="url(#rcsFlame)"/>
+  </g>
+</svg>

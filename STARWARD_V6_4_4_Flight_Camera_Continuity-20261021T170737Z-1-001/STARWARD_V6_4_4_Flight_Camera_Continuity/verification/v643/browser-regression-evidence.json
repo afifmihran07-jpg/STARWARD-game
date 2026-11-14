@@ -1,0 +1,36 @@
+{
+  "build_id": "STARWARD-FLIGHT-REALISM-20261016-V6.4.3",
+  "errors": [],
+  "failed_requests": [],
+  "not_found": [],
+  "camera_invariant": {
+    "before": {
+      "x": 149600000008.83768,
+      "y": 6757202.034327649,
+      "vx": 6.132044618130253,
+      "vy": 30112.18498252101,
+      "fuel": 33313.149350764405,
+      "mass": 40483.149350764405
+    },
+    "after": {
+      "x": 149600000008.83768,
+      "y": 6757202.034327649,
+      "vx": 6.132044618130253,
+      "vy": 30112.18498252101,
+      "fuel": 33313.149350764405,
+      "mass": 40483.149350764405,
+      "mode": "chase",
+      "paused": true
+    },
+    "unchanged": true
+  },
+  "restart": {
+    "mode": "FLIGHT",
+    "stage": 0,
+    "fuel": 40000,
+    "initialCapacity": 40000,
+    "throttle": 1,
+    "autoGuidance": true
+  },
+  "no_runtime_errors": true
+}

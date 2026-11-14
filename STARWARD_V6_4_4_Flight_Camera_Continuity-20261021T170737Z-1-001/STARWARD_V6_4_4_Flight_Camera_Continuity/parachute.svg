@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="pcCanopy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8eef2"/>
+      <stop offset="100%" stop-color="#a8b4bb"/>
+    </linearGradient>
+    <linearGradient id="pcCords" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a939c"/>
+      <stop offset="100%" stop-color="#4a545c"/>
+    </linearGradient>
+    <linearGradient id="pcHarness" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6a7580"/>
+      <stop offset="100%" stop-color="#3a434b"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#17202a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="none">
+    <path d="M15 45 Q50 5 85 45 Q78 67 50 67 Q22 67 15 45 Z" fill="url(#pcCanopy)"/>
+    <path d="M50 67 V88" stroke="url(#pcCords)" stroke-width="3"/>
+    <path d="M28 44 L45 67 M72 44 L55 67" stroke="url(#pcCords)" stroke-width="2.5"/>
+    <rect x="42" y="88" width="16" height="6" rx="2" fill="url(#pcHarness)"/>
+  </g>
+</svg>

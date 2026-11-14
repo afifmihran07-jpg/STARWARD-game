@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ORBITAL — Integration Harness</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="boot-screen" class="screen screen--boot is-active">
+  <div class="boot__panel">
+    <ul id="boot-test-list" class="boot__tests"></ul>
+    <p id="boot-verdict" class="boot__verdict">running</p>
+    <button id="boot-continue" type="button" disabled>Continue</button>
+  </div>
+</div>
+<div id="main-menu" class="screen screen--menu"></div>
+<div id="game-screen" class="screen screen--game">
+  <canvas id="viewport" class="viewport" width="1280" height="720"></canvas>
+  <div id="hud" class="hud">
+    <canvas id="navball" width="260" height="260"></canvas>
+    <canvas id="map-canvas" width="260" height="260"></canvas>
+    <canvas id="overlay-canvas" width="1280" height="720"></canvas>
+    <ul id="hud-objectives"></ul><ul id="comm-log" class="commlog"></ul>
+    <dl id="result-stats"></dl>
+    <span id="hud-mission-name"></span><span id="hud-mission-step"></span>
+    <span id="ro-speed"></span><span id="ro-relspeed"></span>
+    <span id="ro-altitude"></span><span id="ro-accel"></span>
+    <span id="ro-mass"></span><span id="ro-apoapsis"></span>
+    <span id="ro-periapsis"></span><span id="ro-period"></span>
+    <span id="ro-ecc"></span><span id="ro-target-name"></span>
+    <span id="ro-target-range"></span><span id="ro-target-closure"></span>
+    <span id="ro-target-dv"></span><span id="ro-thrust"></span>
+    <span id="ro-fuel"></span><span id="ro-dv"></span>
+    <span id="ro-pitch"></span><span id="ro-heading"></span>
+    <span id="ro-roll"></span><span id="warp-indicator"></span>
+    <span id="camera-label"></span><div id="alert-banner"></div>
+    <div id="thrust-bar"><div id="thrust-bar-fill"></div>
+      <span id="thrust-bar-label"></span></div>
+    <div id="fuel-gauge"><div id="fuel-fill"></div></div>
+  </div>
+  <div id="fade-overlay"></div>
+</div>
+<div id="pause-screen"></div><div id="help-screen"></div>
+<div id="result-screen"><h2 id="result-title"></h2>
+  <p id="result-subtitle"></p></div>
+<button id="btn-resume"></button><button id="btn-abort"></button>
+<button id="btn-help"></button><button id="btn-help-close"></button>
+<button id="btn-pause-help"></button><button id="btn-result-retry"></button>
+<button id="btn-result-menu"></button><button id="btn-new-mission"></button>
+<button id="btn-mission-select"></button><button id="btn-settings"></button>
+<ul id="mission-list"></ul>
+<div id="mission-select" hidden></div><div id="settings-panel" hidden></div>
+<input id="opt-max-warp" type="range" min="1" max="5" value="5">
+<input id="opt-prediction" type="range" min="0" max="100" value="60">
+<input id="opt-fov" type="range" min="45" max="100" value="70">
+<input id="opt-invert-pitch" type="checkbox">
+<input id="opt-show-trails" type="checkbox" checked>
+<input id="opt-hud-toggles" type="checkbox">
+<output id="out-max-warp"></output><output id="out-prediction"></output>
+<output id="out-fov"></output>
+
+<script src="js/math.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/universe.js"></script>
+<script src="js/ship.js"></script>
+<script src="js/missions.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/input.js"></script>
+<script src="js/selftest.js"></script>
+<script src="js/game.js"></script>
+<script src="js/_harness.js"></script>
+</body>
+</html>

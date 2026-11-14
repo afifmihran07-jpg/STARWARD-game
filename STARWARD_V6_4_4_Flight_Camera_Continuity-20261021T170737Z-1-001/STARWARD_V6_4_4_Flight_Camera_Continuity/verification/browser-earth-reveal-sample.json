@@ -1,0 +1,27 @@
+{
+  "wallSeconds": 30,
+  "sample": {
+    "alt": 69056.90194920535,
+    "speed": 3957.961182724084,
+    "verticalSpeed": 3957.961182678898,
+    "fuel": 2404.776016741034,
+    "zoom": 8.687734662921096e-05,
+    "reveal": 0.8397772975754881,
+    "rocketScreen": {
+      "x": 720,
+      "y": 243
+    },
+    "planetCenter": {
+      "x": 719.9999745980268,
+      "y": 802.5400756253136
+    },
+    "fps": 58.41663481967557,
+    "crashed": false,
+    "stage": 0,
+    "throttle": 1,
+    "spool": 1
+  },
+  "consoleErrors": [],
+  "failedRequests": [],
+  "requestCount": 124
+}

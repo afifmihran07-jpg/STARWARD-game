@@ -1,0 +1,2198 @@
+[
+  {
+    "id": "probe_core_s",
+    "file": "svg/rocket/probe_core_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 20
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "crew_capsule_m",
+    "file": "svg/rocket/crew_capsule_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 80
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_m_short",
+    "file": "svg/rocket/fuel_tank_m_short.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_m_long",
+    "file": "svg/rocket/fuel_tank_m_long.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 160,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 160
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 80
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "liquid_engine_m",
+    "file": "svg/rocket/liquid_engine_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_s_short",
+    "file": "svg/rocket/fuel_tank_s_short.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 20
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_s_long",
+    "file": "svg/rocket/fuel_tank_s_long.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_l_short",
+    "file": "svg/rocket/fuel_tank_l_short.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 120,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_l_long",
+    "file": "svg/rocket/fuel_tank_l_long.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 160,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 160
+      },
+      {
+        "type": "radial",
+        "x": 120,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 80
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "liquid_engine_s_vac",
+    "file": "svg/rocket/liquid_engine_s_vac.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "liquid_engine_l_cluster",
+    "file": "svg/rocket/liquid_engine_l_cluster.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "decoupler_inline_m",
+    "file": "svg/rocket/decoupler_inline_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "adapter_s_m",
+    "file": "svg/rocket/adapter_s_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "adapter_m_l",
+    "file": "svg/rocket/adapter_m_l.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "nose_fairing_m",
+    "file": "svg/rocket/nose_fairing_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 100,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 100
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "satellite_bus_m",
+    "file": "svg/satellite/satellite_bus_m.svg",
+    "category": "satellite",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 40
+      },
+      {
+        "type": "surface",
+        "x": 80,
+        "y": 40
+      },
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 80
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "solar_array_deployable",
+    "file": "svg/satellite/solar_array_deployable.svg",
+    "category": "satellite",
+    "width": 140,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "dish_antenna_hg",
+    "file": "svg/satellite/dish_antenna_hg.svg",
+    "category": "satellite",
+    "width": 80,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "antenna_whip",
+    "file": "svg/satellite/antenna_whip.svg",
+    "category": "satellite",
+    "width": 20,
+    "height": 100,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 100
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "instrument_telescope",
+    "file": "svg/satellite/instrument_telescope.svg",
+    "category": "satellite",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 43,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "thruster_cluster",
+    "file": "svg/satellite/thruster_cluster.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_chassis",
+    "file": "svg/rover/rover_chassis.svg",
+    "category": "rover",
+    "width": 140,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 8
+      },
+      {
+        "type": "surface",
+        "x": 70,
+        "y": 8
+      },
+      {
+        "type": "surface",
+        "x": 110,
+        "y": 8
+      },
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 56
+      },
+      {
+        "type": "surface",
+        "x": 110,
+        "y": 56
+      },
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 32
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_wheel",
+    "file": "svg/rover/rover_wheel.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_rocker_bogie",
+    "file": "svg/rover/rover_rocker_bogie.svg",
+    "category": "rover",
+    "width": 120,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 60,
+        "y": 7
+      },
+      {
+        "type": "surface",
+        "x": 12,
+        "y": 32
+      },
+      {
+        "type": "surface",
+        "x": 60,
+        "y": 32
+      },
+      {
+        "type": "surface",
+        "x": 108,
+        "y": 32
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_mast_camera",
+    "file": "svg/rover/rover_mast_camera.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 80
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_robotic_arm",
+    "file": "svg/rover/rover_robotic_arm.svg",
+    "category": "rover",
+    "width": 100,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_rtg",
+    "file": "svg/rover/rover_rtg.svg",
+    "category": "rover",
+    "width": 60,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_solar_panel",
+    "file": "svg/rover/rover_solar_panel.svg",
+    "category": "rover",
+    "width": 100,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 50,
+        "y": 38
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "docking_port_s",
+    "file": "svg/rocket/docking_port_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rcs_block",
+    "file": "svg/rocket/rcs_block.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "battery_m",
+    "file": "svg/rocket/battery_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "payload_container_m",
+    "file": "svg/rocket/payload_container_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "radial_decoupler",
+    "file": "svg/rocket/radial_decoupler.svg",
+    "category": "rocket",
+    "width": 20,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      },
+      {
+        "type": "radial",
+        "x": 20,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "solid_booster_s",
+    "file": "svg/rocket/solid_booster_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 60
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "landing_leg",
+    "file": "svg/rocket/landing_leg.svg",
+    "category": "rocket",
+    "width": 60,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 30
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_sphere_m",
+    "file": "svg/rocket/fuel_tank_sphere_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "engine_aerospike_m",
+    "file": "svg/rocket/engine_aerospike_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "truss_m",
+    "file": "svg/rocket/truss_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "reaction_wheel_block",
+    "file": "svg/satellite/reaction_wheel_block.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 20
+      },
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 20
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "sensor_boom",
+    "file": "svg/satellite/sensor_boom.svg",
+    "category": "satellite",
+    "width": 100,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 10
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "ion_engine_s",
+    "file": "svg/satellite/ion_engine_s.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "solar_array_large",
+    "file": "svg/satellite/solar_array_large.svg",
+    "category": "satellite",
+    "width": 200,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 30
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "phased_array_antenna",
+    "file": "svg/satellite/phased_array_antenna.svg",
+    "category": "satellite",
+    "width": 60,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "propellant_sphere",
+    "file": "svg/satellite/propellant_sphere.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_drill",
+    "file": "svg/rover/rover_drill.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 13
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_antenna_hga",
+    "file": "svg/rover/rover_antenna_hga.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_wheel_spoked_l",
+    "file": "svg/rover/rover_wheel_spoked_l.svg",
+    "category": "rover",
+    "width": 60,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 30
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_chassis_compact",
+    "file": "svg/rover/rover_chassis_compact.svg",
+    "category": "rover",
+    "width": 100,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 24,
+        "y": 5
+      },
+      {
+        "type": "surface",
+        "x": 50,
+        "y": 5
+      },
+      {
+        "type": "surface",
+        "x": 76,
+        "y": 5
+      },
+      {
+        "type": "surface",
+        "x": 22,
+        "y": 38
+      },
+      {
+        "type": "surface",
+        "x": 78,
+        "y": 38
+      },
+      {
+        "type": "surface",
+        "x": 8,
+        "y": 22
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_lidar_dome",
+    "file": "svg/rover/rover_lidar_dome.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_battery_pack",
+    "file": "svg/rover/rover_battery_pack.svg",
+    "category": "rover",
+    "width": 60,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 0
+      },
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_cargo_bay",
+    "file": "svg/rover/rover_cargo_bay.svg",
+    "category": "rover",
+    "width": 100,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 50,
+        "y": 40
+      },
+      {
+        "type": "surface",
+        "x": 50,
+        "y": 6
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "solid_booster_m",
+    "file": "svg/rocket/solid_booster_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 160,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 90
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 90
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "nose_cone_s",
+    "file": "svg/rocket/nose_cone_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "nose_cone_l_blunt",
+    "file": "svg/rocket/nose_cone_l_blunt.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 120
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "heat_shield_m",
+    "file": "svg/rocket/heat_shield_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "habitat_module_m",
+    "file": "svg/rocket/habitat_module_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 80
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "engine_s_lander",
+    "file": "svg/rocket/engine_s_lander.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "engine_nuclear_m",
+    "file": "svg/rocket/engine_nuclear_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fuel_tank_m_ringed",
+    "file": "svg/rocket/fuel_tank_m_ringed.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 120
+      },
+      {
+        "type": "radial",
+        "x": 80,
+        "y": 60
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "grid_fin",
+    "file": "svg/rocket/grid_fin.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "stabilizer_fin",
+    "file": "svg/rocket/stabilizer_fin.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 30
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "parachute_pack_s",
+    "file": "svg/rocket/parachute_pack_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 20
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "satellite_bus_s",
+    "file": "svg/satellite/satellite_bus_s.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 20
+      },
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 20
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "satellite_bus_l",
+    "file": "svg/satellite/satellite_bus_l.svg",
+    "category": "satellite",
+    "width": 120,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 37
+      },
+      {
+        "type": "surface",
+        "x": 120,
+        "y": 37
+      },
+      {
+        "type": "surface",
+        "x": 60,
+        "y": 4
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "solar_array_small",
+    "file": "svg/satellite/solar_array_small.svg",
+    "category": "satellite",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "antenna_helical",
+    "file": "svg/satellite/antenna_helical.svg",
+    "category": "satellite",
+    "width": 20,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "antenna_horn",
+    "file": "svg/satellite/antenna_horn.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "star_tracker",
+    "file": "svg/satellite/star_tracker.svg",
+    "category": "satellite",
+    "width": 20,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "radiator_panel",
+    "file": "svg/satellite/radiator_panel.svg",
+    "category": "satellite",
+    "width": 60,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 30,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "mesh_reflector_l",
+    "file": "svg/satellite/mesh_reflector_l.svg",
+    "category": "satellite",
+    "width": 120,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 60,
+        "y": 80
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_chassis_heavy",
+    "file": "svg/rover/rover_chassis_heavy.svg",
+    "category": "rover",
+    "width": 180,
+    "height": 80,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 12
+      },
+      {
+        "type": "surface",
+        "x": 90,
+        "y": 12
+      },
+      {
+        "type": "surface",
+        "x": 140,
+        "y": 12
+      },
+      {
+        "type": "surface",
+        "x": 40,
+        "y": 76
+      },
+      {
+        "type": "surface",
+        "x": 140,
+        "y": 76
+      },
+      {
+        "type": "surface",
+        "x": 12,
+        "y": 46
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_wheel_mesh_s",
+    "file": "svg/rover/rover_wheel_mesh_s.svg",
+    "category": "rover",
+    "width": 30,
+    "height": 30,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 15,
+        "y": 15
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_track_unit",
+    "file": "svg/rover/rover_track_unit.svg",
+    "category": "rover",
+    "width": 100,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 50,
+        "y": 6
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_mast_telescopic",
+    "file": "svg/rover/rover_mast_telescopic.svg",
+    "category": "rover",
+    "width": 20,
+    "height": 100,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 100
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_arm_gripper",
+    "file": "svg/rover/rover_arm_gripper.svg",
+    "category": "rover",
+    "width": 100,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_laser_spectrometer",
+    "file": "svg/rover/rover_laser_spectrometer.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fairing_payload_s",
+    "file": "svg/rocket/fairing_payload_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 100,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 100
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fairing_payload_m",
+    "file": "svg/rocket/fairing_payload_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 160,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 160
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "fairing_payload_l",
+    "file": "svg/rocket/fairing_payload_l.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 220,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 220
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "engine_skirt_m",
+    "file": "svg/rocket/engine_skirt_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "separator_inline_s",
+    "file": "svg/rocket/separator_inline_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "separator_inline_l",
+    "file": "svg/rocket/separator_inline_l.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "clamp_band_separator_m",
+    "file": "svg/rocket/clamp_band_separator_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "pusher_separator_m",
+    "file": "svg/rocket/pusher_separator_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "payload_separator_s",
+    "file": "svg/rocket/payload_separator_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "interstage_vented_m",
+    "file": "svg/rocket/interstage_vented_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "payload_adapter_cone_m",
+    "file": "svg/rocket/payload_adapter_cone_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "radial_joint_fwd",
+    "file": "svg/rocket/radial_joint_fwd.svg",
+    "category": "rocket",
+    "width": 30,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 10
+      },
+      {
+        "type": "radial",
+        "x": 30,
+        "y": 10
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "radial_joint_aft",
+    "file": "svg/rocket/radial_joint_aft.svg",
+    "category": "rocket",
+    "width": 30,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      },
+      {
+        "type": "radial",
+        "x": 30,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "radial_mount_pylon",
+    "file": "svg/rocket/radial_mount_pylon.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 30
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 30
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "crossfeed_line",
+    "file": "svg/rocket/crossfeed_line.svg",
+    "category": "rocket",
+    "width": 30,
+    "height": 16,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 8
+      },
+      {
+        "type": "radial",
+        "x": 30,
+        "y": 8
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "separation_motor_pair",
+    "file": "svg/rocket/separation_motor_pair.svg",
+    "category": "rocket",
+    "width": 20,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "x_brace_strut",
+    "file": "svg/rocket/x_brace_strut.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "radial_decoupler_l",
+    "file": "svg/rocket/radial_decoupler_l.svg",
+    "category": "rocket",
+    "width": 30,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 30
+      },
+      {
+        "type": "radial",
+        "x": 30,
+        "y": 30
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "launch_escape_tower",
+    "file": "svg/rocket/launch_escape_tower.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 120
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "service_module_m",
+    "file": "svg/rocket/service_module_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 100,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "payload_container_s",
+    "file": "svg/rocket/payload_container_s.svg",
+    "category": "rocket",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 20,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 20,
+        "y": 40
+      },
+      {
+        "type": "radial",
+        "x": 40,
+        "y": 20
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "payload_container_l",
+    "file": "svg/rocket/payload_container_l.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 60,
+        "y": 120
+      },
+      {
+        "type": "radial",
+        "x": 120,
+        "y": 60
+      },
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "engine_l_single",
+    "file": "svg/rocket/engine_l_single.svg",
+    "category": "rocket",
+    "width": 120,
+    "height": 140,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 60,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "nozzle_extension_m",
+    "file": "svg/rocket/nozzle_extension_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "landing_leg_l",
+    "file": "svg/rocket/landing_leg_l.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 120,
+    "attach_nodes": [
+      {
+        "type": "radial",
+        "x": 0,
+        "y": 40
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "docking_port_m",
+    "file": "svg/rocket/docking_port_m.svg",
+    "category": "rocket",
+    "width": 80,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "stack-top",
+        "x": 40,
+        "y": 0
+      },
+      {
+        "type": "stack-bottom",
+        "x": 40,
+        "y": 20
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "satellite_gimbal_platform",
+    "file": "svg/satellite/satellite_gimbal_platform.svg",
+    "category": "satellite",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 40
+      },
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "satellite_boom_hinge",
+    "file": "svg/satellite/satellite_boom_hinge.svg",
+    "category": "satellite",
+    "width": 60,
+    "height": 20,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 0,
+        "y": 10
+      },
+      {
+        "type": "surface",
+        "x": 60,
+        "y": 10
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_shock_strut",
+    "file": "svg/rover/rover_shock_strut.svg",
+    "category": "rover",
+    "width": 20,
+    "height": 60,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 0
+      },
+      {
+        "type": "surface",
+        "x": 10,
+        "y": 60
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  },
+  {
+    "id": "rover_winch",
+    "file": "svg/rover/rover_winch.svg",
+    "category": "rover",
+    "width": 40,
+    "height": 40,
+    "attach_nodes": [
+      {
+        "type": "surface",
+        "x": 20,
+        "y": 0
+      }
+    ],
+    "mass_kg": null,
+    "cost": null
+  }
+]
