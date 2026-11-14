@@ -73,7 +73,12 @@ export class Rocket {
     this.landed = false;
     this.stageFuel = [];
     this._activeEngine = null;
+    /** Propellant actually burned by engines (excludes fuel dropped with stages). */
+    this.propellantBurned = 0;
     this.refresh();
+    /** Stage count of the stack as built. Deploying the payload removes a
+     *  group, but must not renumber the "STAGE n / N" read-out. */
+    this.initialStageCount = this.groups.length;
   }
 
   /** Total mass, wet. */
@@ -255,7 +260,8 @@ export class Rocket {
 
   /** Stage count of the original stack, including stages already jettisoned. */
   get totalStages() {
-    return (this.stagesJettisoned || 0) + Math.max(1, this.groups.length);
+    return Math.max(this.initialStageCount || 0,
+      (this.stagesJettisoned || 0) + Math.max(1, this.groups.length));
   }
 
   /**
@@ -308,7 +314,9 @@ export class Rocket {
   /** Spend propellant from the lit stage. */
   burn(kg) {
     if (this.stageIndex < 0) return;
-    this.stageFuel[this.stageIndex] = Math.max(0, (this.stageFuel[this.stageIndex] || 0) - kg);
+    const before = this.stageFuel[this.stageIndex] || 0;
+    this.stageFuel[this.stageIndex] = Math.max(0, before - kg);
+    this.propellantBurned = (this.propellantBurned || 0) + (before - this.stageFuel[this.stageIndex]);
   }
 stats() {
     const engines = this.engines;

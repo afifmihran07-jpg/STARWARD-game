@@ -16,7 +16,12 @@ export const SaveManager = {
         landed: game.rocket.landed,
         crashed: game.rocket.crashed
       },
-      mission: game.missions.index
+      mission: game.missions.index,
+      // Mission operations and a deployed spacecraft are not persisted; load
+      // says so instead of silently resuming with stale or missing state.
+      missionOpsInProgress: !!(game.missionOperations &&
+        (game.missionOperations.deployed || game.missionOperations.active)),
+      seededTestOrbit: !!game.seededTestOrbit
     }));
   },
   load(game) {
@@ -56,6 +61,11 @@ export const SaveManager = {
           game.rocket.stageFuel = game.rocket.stageCapacity.map(cap => {
             const amount = Math.min(cap, remaining); remaining -= amount; return amount;
           });
+        }
+        // launch() above already gave this flight fresh mission-operations state.
+        game.seededTestOrbit = !!d.seededTestOrbit;
+        if (d.missionOpsInProgress && typeof game.toast === 'function') {
+          game.toast('Save restored · deployed spacecraft and mission-operations progress are not saved, so operations restart');
         }
       }
     }

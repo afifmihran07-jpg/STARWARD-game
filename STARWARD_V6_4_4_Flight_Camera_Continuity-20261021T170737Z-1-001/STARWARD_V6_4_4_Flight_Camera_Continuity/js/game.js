@@ -18,7 +18,13 @@ import {createLaunchSite} from './flight/launchSite.js';
 import {InputManager} from './flight/controls.js';
 import {controlRocket} from './flight/flightController.js';
 import {stepRocket, applyDeltaV} from './physics/physics.js';
-import {orbitElements} from './physics/orbitalMechanics.js';
+import {orbitElements, isOrbitVerified} from './physics/orbitalMechanics.js';
+import {
+  createMissionOperations, stepMissionOperations, deploySpacecraft as deployMissionSpacecraft,
+  downlinkMissionData, setScienceInstrument
+} from './missions/missionOperations.js';
+import {evaluateMissionDebrief} from './missions/missionDebrief.js';
+import {missionBreakdown, profileById, formatMoney} from './construction/budget.js';
 import {TrajectoryPredictor} from './trajectory/trajectoryPredictor.js';
 import {ManeuverNode} from './trajectory/maneuverNode.js';
 import {MissionManager, MISSIONS} from './missions/missionManager.js';
@@ -68,6 +74,13 @@ export class Game {
     this.flash = null;
     this.atmosphereExitPulse = null;
     this.atmosphereExitAnnounced = false;
+    // Post-launch mission operations (see missions/missionOperations.js).
+    this.missionOperations = null;
+    this.deployedSpacecraft = null;
+    this.spacecraftOrbit = null;
+    this.missionLaunchRecord = null;
+    this.opsAccum = 0;
+    this.seededTestOrbit = false;
 
     this.acc = 0;
     this.last = performance.now();
@@ -89,6 +102,12 @@ export class Game {
     if (params.get('debug') === '1') this.setDebug(true);
     const wanted = (params.get('mode') || 'BUILD').toUpperCase();
     this.setMode(wanted === 'MAP' ? 'MAP' : wanted === 'FLIGHT' ? 'FLIGHT' : 'BUILD');
+    // TEST-ONLY: ?debug=1&seedOrbit=<km>[&preset=<key>] places a preset in a
+    // circular Earth orbit with engines off, to exercise mission operations
+    // without flying an ascent. Never available without debug=1.
+    if (this.debug && params.has('seedOrbit')) {
+      this.seedOrbitForTesting(Number(params.get('seedOrbit')), params.get('preset') || 'earthObservation');
+    }
 
     requestAnimationFrame(t => this.loop(t));
   }
@@ -135,6 +154,7 @@ export class Game {
       buildLibrary(this.editor);
       this.editor.fit(this.canvas.width, this.canvas.height);
       this.rocket = null;
+      this.resetMissionState();
       this.node.clear();
       this.plannedPoints = [];
       updateBuildStats(new Rocket([]), this.editor);
@@ -177,6 +197,12 @@ export class Game {
       updateBodyInfo(this);
     });
     on('#executeBurn', () => this.executeBurn());
+
+    // Post-launch mission operations (FLIGHT and MAP share the same panel).
+    on('#deploySpacecraft', () => this.deployMission());
+    on('#missionInstrumentToggle', () => this.toggleScienceInstrument());
+    on('#missionDownlink', () => this.downlinkMission());
+    on('#evaluateMission', () => this.evaluateMission());
     on('#mapFocus', () => focusBody(this, this.selected));
     on('#mapFit', () => fitSystem(this));
     on('#mapFitBody', () => fitBody(this, this.selected));
@@ -293,6 +319,7 @@ export class Game {
       this.editor.clear();
       this.editor.fit(this.canvas.width, this.canvas.height);
       this.rocket = null;
+      this.resetMissionState();
       this.inspect();
       updateBuildStats(new Rocket([]), this.editor);
       this.setMode('BUILD');
@@ -606,6 +633,19 @@ export class Game {
     this.plannedPoints = [];
     this.node.clear();
 
+    // Fresh mission-operations state for every launch: nothing carries over
+    // from a previous flight (no stale spacecraft, data or battery).
+    this.resetMissionState();
+    this.missionOperations = createMissionOperations(this.editor.parts, getSelectedMissionProfile());
+    const launchStats = rocket.stats();
+    const budgetProfile = profileById(this.editor.budgetProfile);
+    this.missionLaunchRecord = {
+      fuel: rocket.fuel,
+      cost: missionBreakdown(this.editor.parts, launchStats).total,
+      budgetCap: budgetProfile.budget
+    };
+    this.refreshMissionOpsPanel();
+
     const cam = this.camera;
     cam.limits(FLIGHT_ZOOM[0], FLIGHT_ZOOM[1]);
     this.flightZoomScale = 1.2;
@@ -660,6 +700,242 @@ export class Game {
     this.plannedPoints = [];
     this.predictor.last = 0;
     updateBodyInfo(this);
+  }
+
+  /* ------------------------- mission operations ------------------------ */
+
+  /** Drop all post-launch operations state (new flight, new design, load). */
+  resetMissionState() {
+    this.missionOperations = null;
+    this.deployedSpacecraft = null;
+    this.spacecraftOrbit = null;
+    this.missionLaunchRecord = null;
+    this.seededTestOrbit = false;
+    const debrief = document.querySelector('#missionDebrief');
+    if (debrief) debrief.hidden = true;
+  }
+
+  /** Launch-vehicle engines commanded off and spooled down. */
+  missionEngineCutoff() {
+    const r = this.rocket;
+    return !!r && r.throttle <= 0.005 && (r.spool || 0) <= 0.01;
+  }
+
+  /** The vehicle operations run on (spacecraft once deployed), its orbit and body. */
+  missionOpsContext() {
+    const vehicle = this.deployedSpacecraft || this.rocket;
+    if (!vehicle) return null;
+    const body = vehicle.body || vehicle.primaryBody;
+    const orbit = vehicle === this.deployedSpacecraft && this.spacecraftOrbit
+      ? this.spacecraftOrbit
+      : orbitElements(vehicle.position, vehicle.velocity, body);
+    return {vehicle, orbit, body};
+  }
+
+  /**
+   * One physics substep of the mission systems, called from update() in both
+   * FLIGHT and MAP. stepRocket remains the only integrator: a separated
+   * spacecraft is advanced with it exactly like the launch vehicle.
+   */
+  stepMissionSystems(sdt) {
+    if (!this.rocket) return;
+    const craft = this.deployedSpacecraft;
+    // An adopted (already separated) payload *is* this.rocket and was stepped already.
+    if (craft && craft !== this.rocket) stepRocket(this.deployedSpacecraft, this.bodies, sdt);
+    if (craft) this.spacecraftOrbit = orbitElements(craft.position, craft.velocity, craft.body || craft.primaryBody);
+    if (!this.missionOperations) return;
+    const opsVehicle = this.deployedSpacecraft || this.rocket;
+    const body = opsVehicle.body || opsVehicle.primaryBody;
+    const orbit = opsVehicle === craft ? this.spacecraftOrbit
+      : orbitElements(opsVehicle.position, opsVehicle.velocity, body);
+    // A separated spacecraft carries no engines, so the carrier's throttle
+    // only gates operations while the payload is still aboard.
+    stepMissionOperations(this.missionOperations, sdt, orbit, body, {
+      engineCutoff: this.rocket.throttle <= 0.005 && (this.rocket.spool || 0) <= 0.01 || opsVehicle !== this.rocket
+    });
+  }
+
+  /** DEPLOY SPACECRAFT: separate the payload stack in a verified orbit. */
+  deployMission() {
+    const rocket = this.rocket;
+    if (!rocket || !this.missionOperations) {
+      this.toast('No vehicle in flight');
+      return {ok: false, message: 'No vehicle in flight'};
+    }
+    if (this.deployedSpacecraft) {
+      this.toast('Spacecraft already deployed');
+      return {ok: false, message: 'Spacecraft already deployed'};
+    }
+    const orbit = orbitElements(rocket.position, rocket.velocity, rocket.body);
+    const result = deployMissionSpacecraft(rocket, orbit, rocket.body, {engineCutoff: this.missionEngineCutoff()});
+    if (!result.ok) {
+      this.toast(result.message);
+      return result;
+    }
+    const craft = result.spacecraft;
+    // Operations now run on the hardware that actually separated; the event
+    // log carries over. Nothing accumulated before deployment.
+    const previous = this.missionOperations;
+    const ops = createMissionOperations(craft.parts, previous.profileId);
+    ops.events = previous.events.concat(result.message);
+    ops.deployed = true;
+    this.missionOperations = ops;
+    this.deployedSpacecraft = craft;
+    this.spacecraftOrbit = orbitElements(craft.position, craft.velocity, craft.body);
+    this.orbit = orbitElements(rocket.position, rocket.velocity, rocket.body);
+    updateFlightUI(this, this.orbit);
+    this.refreshMissionOpsPanel();
+    this.toast(result.message);
+    return result;
+  }
+
+  /** SCIENCE: ON/OFF. */
+  toggleScienceInstrument() {
+    const ops = this.missionOperations;
+    if (!ops || !ops.active) {
+      this.toast('Science operations start after deployment in a verified orbit');
+      return;
+    }
+    setScienceInstrument(ops, !ops.instrumentOn);
+    this.refreshMissionOpsPanel();
+  }
+
+  /** DOWNLINK DATA, from the spacecraft's orbit once it is deployed. */
+  downlinkMission() {
+    if (!this.missionOperations) return {ok: false, message: 'No mission operations'};
+    const ctx = this.missionOpsContext();
+    const downlinkOrbit = ctx ? ctx.orbit : null;
+    const downlinkBody = ctx ? ctx.body : null;
+    const result = downlinkMissionData(this.missionOperations, downlinkOrbit, downlinkBody);
+    this.toast(result.ok ? 'Downlinked ' + result.amount.toFixed(1) + ' MB' : result.message);
+    this.refreshMissionOpsPanel();
+    return result;
+  }
+
+  /** EVALUATE MISSION: grade the flight and show the debrief. */
+  evaluateMission() {
+    const ops = this.missionOperations;
+    const ctx = this.missionOpsContext();
+    const rec = this.missionLaunchRecord || {};
+    const result = evaluateMissionDebrief({
+      profileId: ops ? ops.profileId : getSelectedMissionProfile(),
+      orbit: ctx ? ctx.orbit : null,
+      body: ctx ? ctx.body : null,
+      crashed: !!(ctx && ctx.vehicle.crashed),
+      spacecraftDeployed: !!this.deployedSpacecraft,
+      operations: ops,
+      budget: rec.cost ?? null,
+      budgetCap: rec.budgetCap ?? null,
+      fuelUsed: this.rocket ? (this.rocket.propellantBurned || 0) : 0,
+      fuelCapacity: rec.fuel || 0
+    });
+    const panel = document.querySelector('#missionDebrief');
+    if (panel) {
+      panel.dataset.grade = result.complete ? 'success' : result.partial ? 'partial' : 'failure';
+      const set = (sel, text) => { const el = document.querySelector(sel); if (el) el.textContent = text; };
+      set('#debriefGrade', result.grade);
+      const parts = [result.profileLabel];
+      if (Number.isFinite(result.achievedAltitude)) parts.push('mean altitude ' + (result.achievedAltitude / 1000).toFixed(0) + ' km');
+      parts.push('data collected ' + result.dataCollected.toFixed(1) + ' MB, downlinked ' + result.downlinked.toFixed(1) + ' MB');
+      parts.push('propellant burned ' + Math.round(result.fuelPercentUsed) + '%');
+      if (result.budget != null) parts.push('cost ' + formatMoney(result.budget) + ' (' + Math.round(result.budgetPercent) + '% of cap)');
+      if (this.seededTestOrbit) parts.unshift('DEBUG SEEDED TEST ORBIT — not a launch result');
+      set('#debriefSummary', parts.join(' · '));
+      const issues = document.querySelector('#debriefIssues');
+      if (issues) {
+        const lines = result.failures.map(f => '✕ ' + f).concat(result.recommendations.map(r => '→ ' + r));
+        issues.replaceChildren(...(lines.length ? lines : ['No outstanding issues.'])
+          .flatMap((line, i) => i ? [document.createElement('br'), line] : [line]));
+      }
+      panel.hidden = false;
+    }
+    return result;
+  }
+
+  /** Operations panel read-outs and button states (display only, ~4 Hz). */
+  refreshMissionOpsPanel() {
+    if (typeof document === 'undefined') return;
+    const $ = sel => document.querySelector(sel);
+    const set = (sel, text) => { const el = $(sel); if (el && el.textContent !== text) el.textContent = text; };
+    const ops = this.missionOperations;
+    const r = this.rocket;
+    const opsPanel = $('#missionOpsPanel');
+    if (opsPanel) opsPanel.dataset.active = String(!!(ops && ops.active));
+    const deploy = $('#deploySpacecraft');
+    const science = $('#missionInstrumentToggle');
+    const downlink = $('#missionDownlink');
+    if (!ops) {
+      set('#opsProfile', 'Mission systems');
+      set('#opsStatus', 'Awaiting launch');
+      if (deploy) deploy.disabled = true;
+      if (science) science.disabled = true;
+      if (downlink) downlink.disabled = true;
+      return;
+    }
+    set('#opsProfile', ops.profile.label + (this.seededTestOrbit ? ' · DEBUG TEST ORBIT' : ''));
+    set('#opsStatus', ops.status);
+    const load = ops.systems.draw + (ops.instrumentOn && ops.scienceReady ? ops.systems.science * 2 : 0);
+    const generation = ops.active ? ops.currentGeneration : ops.systems.generation;
+    set('#opsPower', generation.toFixed(1) + ' gen · ' + load + ' load');
+    set('#opsBattery', ops.maxBattery > 0
+      ? Math.round(100 * ops.battery / ops.maxBattery) + '% · ' + ops.battery.toFixed(0) + ' Wh' : 'NO BATTERY');
+    set('#opsScience', ops.systems.science > 0
+      ? (ops.instrumentOn ? 'ON' : 'OFF') + ' · ' + ops.systems.science + '/' + ops.profile.science + ' pts'
+      : 'NONE FITTED');
+    set('#opsData', ops.dataStoredMB.toFixed(2) + ' MB stored');
+    set('#opsDownlinked', ops.dataDownlinkedMB.toFixed(2) + ' MB downlinked');
+    const events = $('#opsEvents');
+    const log = ops.events.length ? ops.events.slice(-12) : ['No mission events yet'];
+    const signature = log.join('\n');
+    if (events && events.dataset.log !== signature) {
+      events.dataset.log = signature;
+      events.replaceChildren(...log.flatMap((line, i) => i ? [document.createElement('br'), line] : [line]));
+      if (opsPanel) opsPanel.scrollTop = opsPanel.scrollHeight;
+    }
+    // DEPLOY: verified bound orbit + engine cutoff + not yet deployed.
+    const canDeploy = !!r && !r.crashed && !this.deployedSpacecraft && isOrbitVerified(this.orbit, r.body, r);
+    if (deploy) {
+      deploy.disabled = !canDeploy;
+      set('#deploySpacecraft', this.deployedSpacecraft ? 'SPACECRAFT DEPLOYED' : 'DEPLOY SPACECRAFT');
+    }
+    // SCIENCE / DOWNLINK: only while operations are active.
+    if (science) {
+      science.disabled = !ops.active || ops.systems.science <= 0;
+      set('#missionInstrumentToggle', 'SCIENCE: ' + (ops.instrumentOn ? 'ON' : 'OFF'));
+    }
+    if (downlink) downlink.disabled = !ops.active;
+  }
+
+  /**
+   * TEST-ONLY (debug=1): put a preset into a circular Earth orbit with its
+   * engines off, as if the ascent had already finished — boosters dropped,
+   * payload still attached. This is not a launch and is labelled as such.
+   */
+  seedOrbitForTesting(altitudeKm, presetKey = 'earthObservation') {
+    if (!this.debug || !(altitudeKm > 0)) return false;
+    if (MISSION_PRESET_CONFIGS[presetKey]) this.loadPresetRocket(presetKey);
+    this.launch();
+    const r = this.rocket;
+    if (!r) return false;
+    r.nextStage();                       // ignition…
+    while (r.canStage()) r.nextStage();  // …and every separation down to the final stage
+    const earth = r.body;
+    const radius = earth.radius + altitudeKm * 1000;
+    const speed = Math.sqrt(earth.mu / radius);
+    r.position = {x: earth.position.x, y: earth.position.y + radius};
+    r.velocity = {x: earth.velocity.x - speed, y: earth.velocity.y};
+    r.angle = -Math.PI / 2;              // nose prograde
+    r.angVel = 0; r.steer = 0; r.throttle = 0; r.spool = 0;
+    r.landed = false; r.hasFlown = true;
+    r.flightEvents.push({type: 'DEBUG_SEEDED_ORBIT', time: r.flightElapsed || 0, altitude: altitudeKm * 1000});
+    this.atmosphereExitAnnounced = true;
+    this.seededTestOrbit = true;
+    this.orbit = orbitElements(r.position, r.velocity, earth);
+    this.updateFlightCamera(true);
+    updateFlightUI(this, this.orbit);
+    this.refreshMissionOpsPanel();
+    this.toast('DEBUG TEST ORBIT ' + altitudeKm + ' km — seeded, not a launch');
+    return true;
   }
 
   setDebug(on) {
@@ -783,6 +1059,9 @@ export class Game {
           stepRocket(this.rocket, this.bodies, sdt);
           if (flightBody) this.checkAtmosphereExit(flightBody, previousAltitude);
           this.physicsSteps++;
+          // Same substep, same integrator: the deployed spacecraft and the
+          // operations clock advance with the launch vehicle, in FLIGHT and MAP.
+          this.stepMissionSystems(sdt);
         }
       }
 
@@ -807,6 +1086,15 @@ export class Game {
         this.infoAccum = 0;
         updateBodyInfo(this);
         updateBridgeWarp(this);
+      }
+    }
+
+    if (this.mode === 'FLIGHT' || this.mode === 'MAP') {
+      // ~4 Hz refresh of the operations panel; display only.
+      this.opsAccum = (this.opsAccum || 0) + dt;
+      if (this.opsAccum >= 0.25) {
+        this.opsAccum = 0;
+        this.refreshMissionOpsPanel();
       }
     }
 

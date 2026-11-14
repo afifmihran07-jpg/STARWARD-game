@@ -210,7 +210,9 @@ export function updateFlightUI(game, orbit) {
     const stageAction = document.querySelector('#stageAction');
     const stageNumber = Math.min(Math.max(1, r.stageNumber), r.totalStages);
     if (stageLine) stageLine.textContent = isSpacecraft ? 'SPACECRAFT' : 'STAGE ' + stageNumber;
-    if (stageAction) stageAction.textContent = isSpacecraft ? 'DEPLOYED' : r.payloadAttached ? 'PAYLOAD ATTACHED' : 'SEPARATION';
+    if (stageAction) stageAction.textContent = isSpacecraft ? 'DEPLOYED'
+      : game.deployedSpacecraft ? 'SPACECRAFT DEPLOYED'
+      : r.payloadAttached ? 'PAYLOAD ATTACHED' : 'SEPARATION';
     stageBtn.disabled = isSpacecraft || !r.canStage();
   }
 
