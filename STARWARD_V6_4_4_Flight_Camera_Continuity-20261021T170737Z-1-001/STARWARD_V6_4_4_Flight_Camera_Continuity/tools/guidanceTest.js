@@ -106,6 +106,19 @@ const snapshot = r => JSON.stringify({p: r.position, v: r.velocity, a: r.angle, 
   eq(orbit.phase, 'ORBIT', 'circular orbit above the atmosphere -> ORBIT');
   eq(orbit.throttle, 0, 'ORBIT: engines off');
 
+  // ORBIT is latched: at the apoapsis of a slightly elliptical orbit the
+  // horizontal speed is below local circular speed, but the engines must
+  // stay off once orbit was reached (found by the E2E stability check).
+  const Ra = earth.radius + 530e3, Rp = earth.radius + 500e3, aEl = (Ra + Rp) / 2;
+  const vApo = Math.sqrt(earth.mu * (2 / Ra - 1 / aEl));
+  const atApo = vehicle({alt: 530e3, vt: vApo, vr: 0});
+  ok(vApo < Math.sqrt(earth.mu / Ra), 'fixture: below circular speed at apoapsis');
+  const latched = guide(atApo, earth, {altitude: 500e3}, {meco: true, circularizing: true, inOrbit: true, downrange: 1});
+  eq(latched.phase, 'ORBIT', 'ORBIT stays latched at apoapsis of an elliptical orbit');
+  eq(latched.throttle, 0, 'latched ORBIT: engines stay off');
+  const fresh = guide(atApo, earth, {altitude: 500e3}, {meco: true, circularizing: true, downrange: 1});
+  ok(fresh.phase !== 'ORBIT' || fresh.memory.inOrbit, 'without the latch the same state is not mistaken for a finished insertion');
+
   // Apoapsis at target but nowhere near enough Δv -> TARGET_UNREACHABLE, best-effort burn.
   const poor = vehicle({alt: 150e3, vt: 2000, vr: 1500});
   poor.stageFuel[poor.stageIndex] = 50;

@@ -107,7 +107,7 @@ function angleForPitch(s, pitch, downrange) {
  */
 export function guide(rocket, body, target = {}, memory = null) {
   const cfg = {...GUIDANCE_DEFAULTS, ...Object.fromEntries(Object.entries(target).filter(([, v]) => Number.isFinite(v)))};
-  const mem = {meco: false, circularizing: false, unreachable: false, downrange: 0, ...(memory || {})};
+  const mem = {meco: false, circularizing: false, unreachable: false, inOrbit: false, downrange: 0, ...(memory || {})};
   const s = relativeState(rocket, body);
   const atmTop = body.atmosphere ? body.atmosphere.height : 0;
   const targetRadius = body.radius + Math.max(cfg.altitude, atmTop + cfg.periapsisMargin);
@@ -163,7 +163,15 @@ export function guide(rocket, body, target = {}, memory = null) {
   // circular speed. Engines off.
   const periapsisClear = s.bound && s.periapsis - body.radius >= atmTop + cfg.periapsisMargin + 1000;
   const circular = s.vt >= Math.sqrt(body.mu / s.r) - 0.5;
-  if (periapsisClear && circular) return out('ORBIT', 0, horizontal);
+  // Once achieved, ORBIT is latched: a real orbit is slightly elliptical, so
+  // near apoapsis the horizontal speed dips below local circular speed —
+  // that must not restart the engines. Engines stay off until the player
+  // disengages the autopilot.
+  if (mem.inOrbit) return out('ORBIT', 0, horizontal);
+  if (periapsisClear && circular) {
+    mem.inOrbit = true;
+    return out('ORBIT', 0, horizontal);
+  }
 
   // Staging: lit stage dry or no engine, and a further propulsive stage exists.
   if (!hasThrust) {

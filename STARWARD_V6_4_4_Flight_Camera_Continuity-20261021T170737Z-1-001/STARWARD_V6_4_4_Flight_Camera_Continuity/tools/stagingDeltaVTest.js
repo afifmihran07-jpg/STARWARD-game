@@ -198,10 +198,13 @@ for (const [name, def] of Object.entries(CUSTOM)) {
 
 /* ---- 4. All six mission presets (plus the starter) --------------------- */
 // Independently computed sequential Δv (stage dry mass dropped), m/s.
-// earthObservation / technology recomputed with the same independent probe
-// after Phase 3 A1 added a 45 kg Comms Antenna to each (was 8750 / 16125).
-const PRESET_DV = {starter: 6442, earthObservation: 8688, weather: 9105, communications: 9456,
-  lunar: 8920, planetary: 9326, technology: 15815};
+// Recomputed with the same independent probe when the presets changed:
+// Phase 3 A1 (Comms Antenna: earthObservation 8750 -> 8688, technology
+// 16125 -> 15815) and Phase 3 B4 (orbit-capable retune: earthObservation
+// -> 11532, weather 9105 -> 11277, communications 9456 -> 11808,
+// technology -> 23517 incl. its ion kick stage).
+const PRESET_DV = {starter: 6442, earthObservation: 11532, weather: 11277, communications: 11808,
+  lunar: 8920, planetary: 9326, technology: 23517};
 for (const key of Object.keys(MISSION_PRESET_CONFIGS)) {
   const editor = new Editor(); editor.loadPreset(key);
   const r0 = new Rocket(editor.parts);
@@ -240,7 +243,8 @@ for (const key of Object.keys(MISSION_PRESET_CONFIGS)) {
   r.nextStage(); r.throttle = 1;
   const idle = {pressed: () => false};
   let upperBurning = false;
-  for (let i = 0; i < 60 * 260; i++) {
+  // 800 s covers the retuned (Phase 3 B4) upper stage's ~410 s burn.
+  for (let i = 0; i < 60 * 800; i++) {
     updateOrbits(bodies, 1 / 60); controlRocket(r, idle, 1 / 60); stepRocket(r, bodies, 1 / 60);
     if (r.stageNumber === 2 && r.actualThrust > 0) upperBurning = true;
     if (r.crashed) break;

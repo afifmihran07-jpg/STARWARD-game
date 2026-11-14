@@ -55,7 +55,8 @@ for (const key of ['earthObservation', 'starter']) {
   const r = g.rocket;
   g.stage(); r.throttle = 1;
   let poweredFrames = 0, engineOutSeen = false;
-  for (let i = 0; i < 60 * 400; i++) {
+  // 900 s covers burnout of the retuned (Phase 3 B4) two-stage presets.
+  for (let i = 0; i < 60 * 900; i++) {
     g.update(1 / 60);
     if (status() === 'POWERED ASCENT') {
       poweredFrames++;
