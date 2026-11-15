@@ -71,14 +71,27 @@ Known open items: several older map, camera-easing and layout tests still fail. 
 
 ## AI tools used
 
-- **Claude Code (Anthropic, Claude Opus 5.5).** Used from the technical audit onwards, as recorded in this repository's commit history. It audited the source, then fixed:
-  - multi-stage staging and Δv;
-  - mission operations, deployment and debrief wiring;
-  - maneuver frames;
-  - the budget gate and truthful UI text.
+STARWARD was built by the team with help from several AI coding and design tools. **Humans reviewed every change** before it was kept, whichever tool proposed it.
 
-  It also wrote the autopilot (`js/flight/guidance.js`), retuned the presets, added the Node regression tests in `tools/`, and verified the game in headless Chrome. Each change was reviewed and approved by the team before it was committed. Commits it authored carry a `Co-Authored-By: Claude` line.
-- The project folder also contains a **Google Stitch** design export (`stitch_extract/`) and a **Freebuff Desktop** project marker (`.freebuff/`) from earlier development.
+- **Earlier development: Codex, Cline, KiloCode, Freebuff and Antigravity.** These AI coding assistants were used while the game was built, up to the V6.4.4 version this repository starts from. The `.freebuff/` folder is a Freebuff Desktop project marker from that period.
+- **Google Stitch: AI-assisted UI layout design of the flight dashboard.** The Stitch export is in `stitch_extract/` (`DESIGN.md`, `code.html`, `screen.png`).
+- **Claude Code and Claude (Anthropic, Claude Opus 5.5): the technical audit, Phases 1–3 and the UI fixes.** This work is recorded in this repository's commit history, and commits it authored carry a `Co-Authored-By: Claude` line. It:
+  - audited the source;
+  - fixed multi-stage staging and Δv, mission operations, deployment and debrief wiring, maneuver frames, the budget gate and truthful UI text;
+  - wrote the autopilot (`js/flight/guidance.js`), retuned the presets and fixed the flight-dashboard UI;
+  - added the Node regression tests in `tools/` and verified the game in headless Chrome;
+  - helped prepare the demo: NASA data attribution, this README and the GitHub Pages deployment.
+
+### AI-generated images and art
+
+- **Claude-provided artwork, not used by the game:**
+  - the 106 SVG part drawings in `svg/rocket/`, `svg/rover/` and `svg/satellite/`;
+  - `overview.png`.
+
+  These files carry Anthropic content credentials (C2PA) stating that Claude provided them and may have created or modified them. The game does not load any of them.
+- **`stitch_extract/screen.png`** is the Google Stitch design mockup. It is a reference only, not used by the game.
+- **In-game part art in `assets/parts/`** is drawn by code: the script `tools/make-parts.mjs` writes the SVG shapes. It is not output from an image model.
+- **Origin not recorded:** the root-level SVG part pack, the PNG part images and the fallback sprite sheet (`assets/sprites/rocket-parts.png`). They carry no AI-generation metadata, and the repository does not record how they were made.
 
 ## Credits
 
