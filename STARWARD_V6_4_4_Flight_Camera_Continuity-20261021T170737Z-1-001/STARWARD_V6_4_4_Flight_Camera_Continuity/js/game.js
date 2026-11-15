@@ -647,7 +647,7 @@ export class Game {
     const name = body.id === 'earth' ? 'EARTH' : body.name.toUpperCase();
     this.flash = {
       title: name + "'S ATMOSPHERE",
-      sub: 'EXITED · SPACE ACHIEVED',
+      sub: 'SPACE REACHED · NOT YET IN ORBIT',
       at: now,
       until: now + 5200
     };

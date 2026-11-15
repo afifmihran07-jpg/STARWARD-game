@@ -45,7 +45,9 @@ function flightStatus(game, alt, orbit) {
   if (r.hasFlown && (!r.activeEngine || r.currentFuel <= 0)) return {text:'ENGINE OUT · NO ACTIVE STAGE', cls:'is-warn'};
   if (r.throttle <= 0.01 && (r.spool || 0) > 0.01) return {text:'ENGINE CUTOFF · THRUST TAILOFF', cls:'is-warn'};
   if (outsideAtmosphere && orbit && orbit.bound && orbit.periapsis <= body.radius + (body.atmosphere?.height || 0) + 10000) {
-    return {text: engineCutoff ? 'COASTING · SUBORBITAL' : 'BURN ACTIVE · PERIAPSIS IN ATMOSPHERE', cls:'is-warn'};
+    // Wording only: the condition above is unchanged.
+    if (orbit.periapsis < body.radius) return {text:'SUBORBITAL · PERIAPSIS BELOW SURFACE', cls:'is-warn'};
+    return {text: (engineCutoff ? 'COASTING' : 'BURN ACTIVE') + ' · PERIAPSIS IN ATMOSPHERE', cls:'is-warn'};
   }
   if (outsideAtmosphere && orbit && !Number.isFinite(orbit.apoapsis)) return {text:'SPACE · ESCAPE TRAJECTORY', cls:'is-space'};
   if (outsideAtmosphere && orbit && orbit.bound && !engineCutoff) return {text:'SPACE · BURN ACTIVE · ORBIT NOT VERIFIED', cls:'is-warn'};

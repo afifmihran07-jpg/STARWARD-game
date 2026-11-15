@@ -109,4 +109,25 @@ function pauseFontRules(css) {
   ok(/<b>[\d,.]+<\/b><em>km<\/em>/.test(element('metrics').innerHTML), 'headline altitude splits "35,7xx" + "km"');
 }
 
+/* ---- Fix 6: suborbital status wording (conditions unchanged) -------------- */
+{
+  const g = makeGame();
+  g.loadPresetRocket('earthObservation'); g.launch();
+  g.stage(); // ignite stage 1 so the vehicle has a lit engine with propellant
+  const r = g.rocket, body = r.body, atm = body.atmosphere.height;
+  // Test-only state: coast above the atmosphere (UI is only read here, never stepped).
+  r.position.y += atm + 20000; r.hasFlown = true; r.landed = false; r.throttle = 0; r.spool = 0;
+  ok(r.altitudeAboveSurface(body) > atm, 'probe vehicle is above the atmosphere');
+  const status = pe => { updateFlightUI(g, {bound: true, periapsis: pe, apoapsis: body.radius + 300e3, eccentricity: 0.1}); return element('flightStatus').textContent; };
+  eq(status(body.radius - 50e3), 'SUBORBITAL · PERIAPSIS BELOW SURFACE', 'periapsis below the surface');
+  eq(status(body.radius + atm / 2), 'COASTING · PERIAPSIS IN ATMOSPHERE', 'periapsis inside the atmosphere (coasting)');
+  eq(status(body.radius + atm + 5000), 'COASTING · PERIAPSIS IN ATMOSPHERE', 'periapsis within atmosphere top + 10 km (unchanged band)');
+  ok(!/PERIAPSIS/.test(status(body.radius + atm + 15000)), 'band edge unchanged: atmosphere top + 15 km is outside it');
+  // Banner sub-line on atmosphere exit.
+  g.atmosphereExitAnnounced = false;
+  g.checkAtmosphereExit(body, atm - 100);
+  eq(g.flash && g.flash.sub, 'SPACE REACHED · NOT YET IN ORBIT', 'atmosphere-exit banner sub-line');
+  ok(!/ACHIEVED/.test(read('js/game.js')), 'old "SPACE ACHIEVED" wording removed');
+}
+
 console.log(`${checks} checks passed: UI fixes`);
