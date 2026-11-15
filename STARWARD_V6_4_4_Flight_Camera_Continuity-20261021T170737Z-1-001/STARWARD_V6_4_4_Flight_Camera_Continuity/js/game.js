@@ -53,6 +53,8 @@ export class Game {
     this.bodies = createSolarSystem();
     this.editor = new Editor();
     this.editor.loadStarter();
+    // Startup loads the starter preset, so it uses that preset's profile too.
+    setMissionProfile(MISSION_PRESET_CONFIGS.starter.missionProfile);
     this.input = new InputManager(canvas);
     this.predictor = new TrajectoryPredictor();
     this.node = new ManeuverNode();

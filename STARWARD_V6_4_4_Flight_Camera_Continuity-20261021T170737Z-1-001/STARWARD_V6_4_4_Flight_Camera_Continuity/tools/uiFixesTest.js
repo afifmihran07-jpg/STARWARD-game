@@ -130,4 +130,24 @@ function pauseFontRules(css) {
   ok(!/ACHIEVED/.test(read('js/game.js')), 'old "SPACE ACHIEVED" wording removed');
 }
 
+/* ---- Fix 7: startup uses the starter preset's mission profile ------------- */
+{
+  const {setMissionProfile, updateBuildStats, getSelectedMissionProfile} = await import('../js/ui/buildUI.js');
+  const {Rocket} = await import('../js/rocket/rocket.js');
+  const {MISSION_PRESET_CONFIGS} = await import('../js/construction/missionPresets.js');
+  // The constructor needs a real canvas, so check its source order, then replay the same calls.
+  const src = read('js/game.js');
+  const ctor = src.slice(src.indexOf('constructor('), src.indexOf('this.input = new InputManager'));
+  ok(/this\.editor\.loadStarter\(\);\s*(?:\/\/[^\n]*\n\s*)?setMissionProfile\(MISSION_PRESET_CONFIGS\.starter\.missionProfile\);/.test(ctor),
+    'constructor sets the starter profile right after loadStarter()');
+  eq(MISSION_PRESET_CONFIGS.starter.missionProfile, 'technology', 'starter preset profile is technology');
+  const g = makeGame();
+  g.editor.loadStarter(); setMissionProfile(MISSION_PRESET_CONFIGS.starter.missionProfile);
+  updateBuildStats(new Rocket(g.editor.parts), g.editor);
+  eq(getSelectedMissionProfile(), 'technology', 'startup profile is technology');
+  eq(element('missionReadiness').textContent, '40%', 'startup readiness stays 40%');
+  g.loadPresetRocket('starter');
+  eq(element('missionReadiness').textContent, '40%', 'picking the starter preset also shows 40%');
+}
+
 console.log(`${checks} checks passed: UI fixes`);
