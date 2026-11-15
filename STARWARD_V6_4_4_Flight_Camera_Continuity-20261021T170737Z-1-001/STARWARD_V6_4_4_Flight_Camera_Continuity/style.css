@@ -1820,6 +1820,9 @@ body.map-mode .dock > .panel {
 #missionOpsPanel[data-active="true"] #opsStatus { color:var(--mint); }
 #missionOpsPanel .hint { font-size:10px; line-height:1.45; }
 #opsEvents { display:block; margin-top:6px; color:var(--muted); font-size:10px; }
+/* Data attribution under the map body stats (see DATA_SOURCES.md). */
+.body-focus__source { margin:6px 0 0; font-size:9px; letter-spacing:.04em; color:var(--muted); }
+.body-focus__source a { color:inherit; text-decoration:underline dotted; }
 #missionDebrief { margin-top:10px; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.03); }
 #missionDebrief h3 { margin:0 0 5px; font-size:11px; letter-spacing:.1em; color:var(--text); }
 #missionDebrief p, #missionDebrief small { display:block; margin:5px 0; font-size:10px; line-height:1.45; color:var(--muted); }

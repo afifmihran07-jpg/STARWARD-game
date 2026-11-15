@@ -110,6 +110,10 @@ export function updateBodyInfo(game) {
     }
   }
 
+  // Data attribution: every figure above comes from a NASA NSSDCA fact sheet.
+  const source = dataSource(body);
+  const link = document.querySelector('#bodySourceLink');
+  if (link) { link.textContent = source.name; link.href = source.url; }
   const list = document.querySelector('#bodyStats');
   if (list) {
     list.innerHTML = rows.map(([k, v]) =>
@@ -286,4 +290,17 @@ export function updateBridgeWarp(game) {
 /** The warp the simulation actually runs at (altitude-limited). */
 function appliedWarp(game) {
   return typeof game.appliedWarp === 'function' ? game.appliedWarp() : (game.warp || 1);
+}
+
+/** NASA NSSDCA fact sheet the body's mass/radius/orbit/gravity come from. */
+function dataSource(body) {
+  const base = 'https://nssdc.gsfc.nasa.gov/planetary/';
+  const special = {
+    sun: ['NASA NSSDCA Sun Fact Sheet', base + 'factsheet/sunfact.html'],
+    ceres: ['NASA NSSDCA Asteroid Fact Sheet', base + 'factsheet/asteroidfact.html'],
+    europa: ['NASA NSSDCA Jovian Satellite Fact Sheet', base + 'factsheet/joviansatfact.html'],
+    titan: ['NASA NSSDCA Saturnian Satellite Fact Sheet', base + 'factsheet/saturniansatfact.html']
+  };
+  const [name, url] = special[body && body.id] || ['NASA NSSDCA Planetary Fact Sheet', base + 'planetfact.html'];
+  return {name, url};
 }

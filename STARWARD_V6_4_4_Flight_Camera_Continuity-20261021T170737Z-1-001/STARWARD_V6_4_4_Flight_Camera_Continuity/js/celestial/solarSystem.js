@@ -84,7 +84,8 @@ function createSolarSystem() {
   const jupiterOrbitSpeed = Math.sqrt(G * sun.mass / 778.479e9) / 778.479e9;
   const jupiter = new CelestialBody({
     id: 'jupiter', name: 'Jupiter', mass: 1.89813e27, radius: 69911000,
-    gravity: 24.79, atmosphere: {height: 100000, density: 0.16}, rotation: 0.414,
+    // Displayed gravity: NSSDCA Jupiter Fact Sheet, equatorial at 1 bar (was 24.79).
+    gravity: 23.12, atmosphere: {height: 100000, density: 0.16}, rotation: 0.414,
     parent: sun, orbit: {radius: 778.479e9}, color: '#d9ab7e',
     orbitAngle: 4.35, orbitSpeed: jupiterOrbitSpeed,
     type: 'GAS GIANT', moons: 95, tempC: -145,
@@ -104,7 +105,8 @@ function createSolarSystem() {
   const saturnOrbitSpeed = Math.sqrt(G * sun.mass / 1433.53e9) / 1433.53e9;
   const saturn = new CelestialBody({
     id: 'saturn', name: 'Saturn', mass: 5.6834e26, radius: 58232000,
-    gravity: 10.44, atmosphere: {height: 100000, density: 0.12}, rotation: 0.444,
+    // Displayed gravity: NSSDCA Saturn Fact Sheet, equatorial at 1 bar (was 10.44).
+    gravity: 8.96, atmosphere: {height: 100000, density: 0.12}, rotation: 0.444,
     parent: sun, orbit: {radius: 1433.53e9}, color: '#e6d3a3',
     orbitAngle: 5.5, orbitSpeed: saturnOrbitSpeed,
     type: 'GAS GIANT', moons: 146, tempC: -178,
