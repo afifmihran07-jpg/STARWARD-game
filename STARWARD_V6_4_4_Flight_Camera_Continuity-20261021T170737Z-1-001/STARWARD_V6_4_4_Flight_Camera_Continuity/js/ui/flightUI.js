@@ -179,8 +179,6 @@ export function updateFlightUI(game, orbit) {
   setText('#flightMach', inAtmosphere ? mach.toFixed(2) : 'N/A');
   setText('#flightRegime', !inAtmosphere ? 'VACUUM'
     : mach < 0.85 ? 'SUBSONIC' : mach < 1.35 ? 'TRANSONIC' : 'SUPERSONIC');
-  setText('#flightTot', isFinite(ap)
-    ? (Math.max(0, ap - body.radius) / 1000).toFixed(1) + ' KM' : 'ESCAPE');
   if (metrics) {
     const ceiling = atmosphere && atmosphere.height > 0
       ? atmosphere.height : Math.max(1, body.radius * 0.02);

@@ -72,4 +72,18 @@ function pauseFontRules(css) {
   ok(/right:\s*13px/.test(rule[1]) && /align-items:\s*flex-end/.test(rule[1]), 'regime stays right-aligned, away from the velocity number');
 }
 
+/* ---- Fix 4: apoapsis shown once on the telemetry card --------------------- */
+{
+  const html = read('index.html');
+  const card = html.slice(html.indexOf('fh-card--telemetry'), html.indexOf('fh-telemetry-foot') + 600);
+  ok(!/id="flightTot"/.test(html), 'duplicate "Tot" readout removed from index.html');
+  eq((card.match(/id="flightApogee"/g) || []).length, 1, 'telemetry card has exactly one apoapsis readout');
+  ok(!/#flightTot/.test(read('js/ui/flightUI.js')), 'flightUI no longer writes #flightTot');
+  const g = makeGame();
+  g.loadPresetRocket('earthObservation'); g.launch();
+  element('flightApogee').textContent = '';
+  updateFlightUI(g, g.orbit);
+  ok(element('flightApogee').textContent.length > 0, 'remaining apoapsis readout is still updated');
+}
+
 console.log(`${checks} checks passed: UI fixes`);
