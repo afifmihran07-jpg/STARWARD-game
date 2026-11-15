@@ -60,4 +60,16 @@ function pauseFontRules(css) {
   }
 }
 
+/* ---- Fix 3: regime label stays above the velocity unit -------------------- */
+// Browser-measured (2026-11-15, 5 viewport/DPR configs, "SUPERSONIC" + 11,186 m/s):
+// regime text bottom sits 2px above "m/s" at top:69px. At the old 82px it overlapped.
+{
+  const css = read('css/flight-dashboard.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const rule = /body\[data-ui-mode="flight"\] \.fh-velocity-meta \{([^}]*)\}/.exec(css);
+  ok(rule, 'velocity meta rule exists');
+  const top = Number(/(?:^|;)\s*top:\s*([\d.]+)px/.exec(rule[1])?.[1]);
+  ok(top <= 69, `velocity meta top ${top}px <= 69px (regime clear of the unit)`);
+  ok(/right:\s*13px/.test(rule[1]) && /align-items:\s*flex-end/.test(rule[1]), 'regime stays right-aligned, away from the velocity number');
+}
+
 console.log(`${checks} checks passed: UI fixes`);
