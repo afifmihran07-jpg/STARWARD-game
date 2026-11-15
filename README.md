@@ -6,6 +6,12 @@ It is an **educational 2D simulation**: real physics relationships, NASA planeta
 
 The game lives in [`STARWARD_V6_4_4_Flight_Camera_Continuity-20261021T170737Z-1-001/STARWARD_V6_4_4_Flight_Camera_Continuity/`](STARWARD_V6_4_4_Flight_Camera_Continuity-20261021T170737Z-1-001/STARWARD_V6_4_4_Flight_Camera_Continuity/). It is a static ES-module site with no build step.
 
+## Project Demonstration Video
+
+Watch our STARWARD project demonstration:
+
+[▶ Watch STARWARD Demo on YouTube](https://youtu.be/YGZOalVrd9s)
+
 ## Run it
 
 - **Online:** see the GitHub Pages link in the repository's About panel.
