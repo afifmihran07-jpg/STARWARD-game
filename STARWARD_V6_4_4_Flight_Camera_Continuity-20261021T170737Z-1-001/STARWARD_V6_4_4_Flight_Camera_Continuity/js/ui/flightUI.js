@@ -1,8 +1,22 @@
 ﻿/* =========================================================================
    flightUI.js — the FLIGHT COMPUTER panel and the mission progress bar.
    ========================================================================= */
-import {formatDistance, isOrbitVerified} from '../physics/orbitalMechanics.js';
+import {isOrbitVerified} from '../physics/orbitalMechanics.js';
 import {GUIDANCE_PHASE_LABELS} from '../flight/guidance.js';
+
+const AU = 149597870700;
+const groupKm = km => Math.round(km).toLocaleString('en-US');
+/** Flight-HUD distances: m below 1 km, km (thousands separators) up to 100,000 km,
+ *  then million km, then AU above 0.1 AU. The map keeps formatDistance. */
+export function formatHudDistance(m) {
+  if (!isFinite(m)) return '∞';
+  const a = Math.abs(m), s = m < 0 ? '-' : '';
+  if (a < 1000) return m.toFixed(0) + ' m';
+  if (a < 1e6) return s + (a / 1000).toFixed(1) + ' km';
+  if (a <= 1e8) return s + groupKm(a / 1000) + ' km';
+  if (a <= 0.1 * AU) return s + (a / 1e9).toFixed(2) + ' million km';
+  return s + (a / AU).toFixed(3) + ' AU';
+}
 
 function setText(sel, text) {
   const el = document.querySelector(sel);
@@ -96,7 +110,7 @@ export function updateFlightUI(game, orbit) {
   const periapsisText = !orbit ? '—' : !orbit.bound ? 'UNBOUND'
     : periapsisAltitude <= 0 ? 'BODY INTERSECTION'
     : periapsisAltitude < (body.atmosphere?.height || 0) ? 'ATMOSPHERIC'
-    : formatDistance(periapsisAltitude);
+    : formatHudDistance(periapsisAltitude);
   // Live thrust-to-weight of the lit stage, using spooled (actual) thrust.
   const spool = r.spool || 0;
   const actualThrust = r.activeEngine ? (Number.isFinite(r.actualThrust) ? r.actualThrust : r.activeEngine.thrust * spool) : 0;
@@ -114,15 +128,15 @@ export function updateFlightUI(game, orbit) {
     STAGE_SEPARATION:'STAGE SEPARATION', ENGINE_CUTOFF:'ENGINE CUTOFF', COASTING:'COASTING',
     ORBIT_VERIFIED:'ORBIT VERIFIED'};
   const rows = [
-      ['ALTITUDE', formatDistance(alt)],
+      ['ALTITUDE', formatHudDistance(alt)],
       ['ENVIRONMENT', body.atmosphere && alt < body.atmosphere.height
         ? 'ATMOSPHERE' : 'VACUUM'],
       ['VELOCITY', speed.toFixed(0) + ' m/s'],
       ['MACH', body.atmosphere && alt < body.atmosphere.height ? mach.toFixed(2) + ' · EST.' : 'N/A · VACUUM'],
       ['DYN PRESSURE', q >= 1000 ? (q / 1000).toFixed(1) + ' kPa' : q.toFixed(0) + ' Pa'],
-      ['MAX-Q', r.maxDynPressure >= 1000 ? (r.maxDynPressure / 1000).toFixed(1) + ' kPa @ ' + formatDistance(r.maxQAltitude || 0) : 'not reached'],
+      ['MAX-Q', r.maxDynPressure >= 1000 ? (r.maxDynPressure / 1000).toFixed(1) + ' kPa @ ' + formatHudDistance(r.maxQAltitude || 0) : 'not reached'],
       ['G-FORCE', gForce.toFixed(1) + ' g'],
-      ['APOAPSIS', isFinite(ap) ? formatDistance(Math.max(0, ap - body.radius)) : 'ESCAPE'],
+      ['APOAPSIS', isFinite(ap) ? formatHudDistance(Math.max(0, ap - body.radius)) : 'ESCAPE'],
       ['PERIAPSIS', periapsisText],
       ['FUEL', isSpacecraft ? 'N/A' : fuelCurrent.toFixed(0) + ' / ' + fuelCap.toFixed(0) + ' kg'],
       ['MASS', (r.mass / 1000).toFixed(2) + ' t'],
@@ -172,7 +186,7 @@ export function updateFlightUI(game, orbit) {
   setText('#fuelMass', isSpacecraft ? 'SPACECRAFT' : Math.round(fuelCurrent).toLocaleString() + ' kg');
   const fuelGauge = document.querySelector('#fuelGauge');
   if (fuelGauge) fuelGauge.style.setProperty('--fuel-level', (fuelFraction * 360).toFixed(1) + 'deg');
-  setText('#flightApogee', isFinite(ap) ? formatDistance(Math.max(0, ap - body.radius)) : 'ESCAPE');
+  setText('#flightApogee', isFinite(ap) ? formatHudDistance(Math.max(0, ap - body.radius)) : 'ESCAPE');
   setText('#flightAccel', gForce.toFixed(2) + ' G');
   const atmosphere = body.atmosphere;
   const inAtmosphere = !!atmosphere && alt < atmosphere.height;
@@ -185,11 +199,11 @@ export function updateFlightUI(game, orbit) {
     metrics.style.setProperty('--alt-fill',
       Math.max(0, Math.min(100, alt / ceiling * 100)).toFixed(1) + '%');
   }
-  setText('#flightTransonic', atmosphere ? 'TRANSONIC BOUNDARY // ' + formatDistance(atmosphere.height * 0.1) : 'NO ATMOSPHERE');
+  setText('#flightTransonic', atmosphere ? 'TRANSONIC BOUNDARY // ' + formatHudDistance(atmosphere.height * 0.1) : 'NO ATMOSPHERE');
   setText('#flightMaxQ', r.maxDynPressure > 0
-    ? 'MAX-Q PRESSURE ZONE // ' + formatDistance(r.maxQAltitude || 0)
+    ? 'MAX-Q PRESSURE ZONE // ' + formatHudDistance(r.maxQAltitude || 0)
     : 'MAX-Q PRESSURE ZONE // ' + (atmosphere ? 'AWAITING ASCENT' : 'N/A'));
-  setText('#flightPadLabel', 'LAUNCH PAD // ' + body.name.toUpperCase() + ' · ' + formatDistance(0));
+  setText('#flightPadLabel', 'LAUNCH PAD // ' + body.name.toUpperCase() + ' · ' + formatHudDistance(0));
   setText('#sasBadge', r.sas ? 'SAS LOCKED' : 'SAS STANDBY');
   const sasBadge = document.querySelector('#sasBadge');
   if (sasBadge) {

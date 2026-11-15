@@ -2,7 +2,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {makeGame, element} from './_gameHarness.js';
-import {updateFlightUI} from '../js/ui/flightUI.js';
+import {updateFlightUI, formatHudDistance} from '../js/ui/flightUI.js';
+import {formatDistance} from '../js/physics/orbitalMechanics.js';
 
 let checks = 0;
 const ok = (c, m) => { assert.ok(c, m); checks++; };
@@ -84,6 +85,28 @@ function pauseFontRules(css) {
   element('flightApogee').textContent = '';
   updateFlightUI(g, g.orbit);
   ok(element('flightApogee').textContent.length > 0, 'remaining apoapsis readout is still updated');
+}
+
+/* ---- Fix 5: flight-HUD distance formatting -------------------------------- */
+{
+  const AU = 149597870700;
+  const cases = [
+    [0, '0 m'], [850, '850 m'], [185300, '185.3 km'], [999.94e3, '999.9 km'],
+    [35786e3, '35,786 km'], [99999e3, '99,999 km'], [100000e3, '100,000 km'],
+    [384400e3, '0.38 million km'], [1.5e9, '1.50 million km'], [0.1 * AU, '14.96 million km'],
+    [0.2 * AU, '0.200 AU'], [AU, '1.000 AU'], [5.2 * AU, '5.200 AU'], [Infinity, '∞']
+  ];
+  for (const [m, want] of cases) eq(formatHudDistance(m), want, `formatHudDistance(${m})`);
+  // Shared map formatter is untouched.
+  eq(formatDistance(384400e3), '384.4 Mm', 'map formatDistance unchanged (Mm)');
+  eq(formatDistance(185300), '185.3 km', 'map formatDistance unchanged (km)');
+  ok(!/formatDistance\(/.test(read('js/ui/flightUI.js')), 'flight HUD uses only formatHudDistance');
+  // Headline altitude keeps a numeric value and a unit after the split.
+  const g = makeGame();
+  g.loadPresetRocket('earthObservation'); g.launch();
+  g.rocket.position.x += 35786e3; // read-only probe of the HUD at GEO distance; not stepped
+  updateFlightUI(g, g.orbit);
+  ok(/<b>[\d,.]+<\/b><em>km<\/em>/.test(element('metrics').innerHTML), 'headline altitude splits "35,7xx" + "km"');
 }
 
 console.log(`${checks} checks passed: UI fixes`);
