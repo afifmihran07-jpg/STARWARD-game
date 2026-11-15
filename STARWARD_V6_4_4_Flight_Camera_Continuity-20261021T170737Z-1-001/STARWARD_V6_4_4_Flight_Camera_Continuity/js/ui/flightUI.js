@@ -136,7 +136,9 @@ export function updateFlightUI(game, orbit) {
         ? 'AUTO · ' + (GUIDANCE_PHASE_LABELS[r.guidancePhase] || 'ENGAGED') + ' → ' + Math.round((r.guidanceTargetAltitude || 0) / 1000) + ' km [G]'
         : r.guidancePhase === 'MANUAL_OVERRIDE' ? 'MANUAL OVERRIDE [G]' : 'MANUAL [G]'],
       ['FLIGHT PHASE', phaseLabels[r.flightPhase] || r.flightPhase || 'ASCENT'],
-      ['WARP', game.warp + '\u00D7'],
+      // Applied warp (altitude-limited), not the raw request.
+      ['WARP', (typeof game.appliedWarp === 'function' ? game.appliedWarp() : game.warp) + '\u00D7' +
+        (typeof game.appliedWarp === 'function' && game.appliedWarp() < game.warp ? ' · LIMITED' : '')],
       ['PRIMARY', body.name],
       ['ENGINES', isSpacecraft ? 'NONE (SPACECRAFT)' : st.engines + ' fitted']
     ];

@@ -33,6 +33,7 @@ import {SaveManager} from './save/saveManager.js';
 import {buildLibrary, updateBuildStats, getSelectedMissionProfile, setMissionProfile} from './ui/buildUI.js';
 import {MISSION_PRESET_CONFIGS} from './construction/missionPresets.js';
 import {GUIDANCE_DEFAULTS} from './flight/guidance.js';
+import {FLIGHT_WARP_MAX, LOW_ALT_WARP_CEILING, maxFlightWarpForAltitude} from './flight/flightPolicy.js';
 import {updateFlightUI} from './ui/flightUI.js';
 import {updateBodyInfo, initBodyChips, initBodyFocusList, updateBridgeWarp} from './ui/mapUI.js';
 import {selectBody, focusBody, fitSystem, fitBody, bodyOrder} from './map/spaceMap.js';
@@ -40,7 +41,7 @@ import {selectBody, focusBody, fitSystem, fitBody, bodyOrder} from './map/spaceM
 const WARP_STEPS = [1, 2, 5, 10, 25, 50, 100, 500, 1000, 2500, 10000];
 // Flight integrates the vehicle every substep, so it stays on the slow end of
 // the ladder; the SYSTEM MAP can safely run the whole system much faster.
-const FLIGHT_WARP = 50;
+const FLIGHT_WARP = FLIGHT_WARP_MAX;
 const FLIGHT_ZOOM = [0.03, 60];
 const MAP_ZOOM = [1e-12, 0.2];
 
@@ -248,12 +249,7 @@ export class Game {
       b.onclick = () => this.stepWarp(Number(b.dataset.warpStep));
     });
     document.querySelectorAll('[data-warp-value]').forEach(b => {
-      b.onclick = () => {
-        const requested = WARP_STEPS.indexOf(Number(b.dataset.warpValue));
-        const max = this.mode === 'FLIGHT' ? WARP_STEPS.indexOf(FLIGHT_WARP) : WARP_STEPS.length - 1;
-        this.warp = WARP_STEPS[Math.max(0, Math.min(max, requested))];
-        this.syncFlightTools();
-      };
+      b.onclick = () => this.requestWarp(Number(b.dataset.warpValue));
     });
     on('#pauseButton', () => { this.paused = !this.paused; });
     on('#mapPause', () => { this.paused = !this.paused; });
@@ -288,16 +284,58 @@ export class Game {
   }
 
   /**
-   * Move the shared time warp one rung up or down. FLIGHT integrates the
+   * Time warp has two values: this.warp is what the player requested, and
+   * appliedWarp() is what the physics actually uses. FLIGHT integrates the
    * vehicle directly, so it is capped at FLIGHT_WARP; the map may run the
-   * whole system up to the top of the ladder.
+   * whole system up to the top of the ladder. While a vehicle is below
+   * 120 km (flightPolicy.js) the applied warp is at most 2×, in FLIGHT and
+   * MAP alike; above it the request is restored automatically.
+   */
+  modeWarpMax() {
+    return this.mode === 'FLIGHT' ? FLIGHT_WARP : WARP_STEPS[WARP_STEPS.length - 1];
+  }
+
+  /** Highest warp allowed right now, and why. */
+  warpCap() {
+    const modeMax = this.modeWarpMax();
+    const r = this.rocket;
+    if (!r || r.crashed || this.mode === 'BUILD') return {cap: modeMax, reason: null};
+    const body = r.body || r.primaryBody;
+    const altitude = body ? r.altitudeAboveSurface(body) : Infinity;
+    const altitudeCap = maxFlightWarpForAltitude(altitude);
+    if (altitudeCap < FLIGHT_WARP_MAX) {
+      return {cap: Math.min(modeMax, altitudeCap), reason: 'below ' + Math.round(LOW_ALT_WARP_CEILING / 1000) + ' km'};
+    }
+    return {cap: modeMax, reason: null};
+  }
+
+  /** The warp the simulation runs at: the request, clamped by warpCap(). */
+  appliedWarp() {
+    return Math.max(1, Math.min(this.warp, this.warpCap().cap));
+  }
+
+  /** Request a warp level (buttons); the request may exceed what is applied. */
+  requestWarp(value) {
+    const i = WARP_STEPS.indexOf(Number(value));
+    if (i < 0) return this.appliedWarp();
+    this.warp = Math.min(WARP_STEPS[i], this.modeWarpMax());
+    this.syncFlightTools();
+    return this.appliedWarp();
+  }
+
+  /**
+   * Move the warp one rung. Up raises the request (applied stays clamped);
+   * down steps from the APPLIED level, so it takes effect immediately even
+   * while a higher request is being held back.
    */
   stepWarp(delta) {
-    const i = WARP_STEPS.indexOf(this.warp);
-    const current = i >= 0 ? i : 0;
-    const max = this.mode === 'FLIGHT' ? WARP_STEPS.indexOf(FLIGHT_WARP) : WARP_STEPS.length - 1;
-    this.warp = WARP_STEPS[Math.max(0, Math.min(max, current + delta))];
+    const top = WARP_STEPS.indexOf(this.modeWarpMax());
+    const from = delta < 0 ? this.appliedWarp() : this.warp;
+    const i = Math.max(0, WARP_STEPS.indexOf(from));
+    this.warp = WARP_STEPS[Math.max(0, Math.min(top, i + delta))];
+    this.syncFlightTools();
   }
+
 
   /** Selection index helpers for keyboard navigation on the map. */
   cycleSelection(step) {
@@ -500,6 +538,7 @@ export class Game {
         this.warp = FLIGHT_WARP;
         this.toast('Time warp limited to ' + FLIGHT_WARP + '× while flying');
       }
+      this._warpLimited = false;
       if (!this.rocket || this.rocket.crashed) {
         this.launch();
         // launch() can reject an empty or invalid design. Don't leave the
@@ -1123,8 +1162,10 @@ export class Game {
     if (this.mode === 'BUILD') {
       updateOrbits(this.bodies, dt);
     } else if (!this.paused) {
-      const substeps = Math.min(this.warp, 60);
-      const sdt = (dt * this.warp) / substeps;
+      // The applied warp (altitude-limited), not the raw request.
+      const warp = this.appliedWarp();
+      const substeps = Math.min(warp, 60);
+      const sdt = (dt * warp) / substeps;
 
       for (let i = 0; i < substeps; i++) {
         updateOrbits(this.bodies, sdt);
@@ -1185,10 +1226,26 @@ export class Game {
   }
 
   syncFlightTools() {
-    const warp = document.querySelector('#warpValue');
-    if (warp) warp.textContent = this.warp + '\u00D7';
-    const mapWarp = document.querySelector('#mapWarpValue');
-    if (mapWarp) mapWarp.textContent = this.warp + '\u00D7';
+    // Show the APPLIED warp, and say so when a higher request is held back.
+    const applied = this.appliedWarp();
+    const {cap, reason} = this.warpCap();
+    const limited = !!reason && this.warp > applied;
+    if (limited && !this._warpLimited && this.mode !== 'BUILD') {
+      // Once per transition: a request over the cap, or descending below it.
+      this.toast('Time warp limited to ' + cap + '× ' + reason + ' — ' + this.warp + '× resumes above it');
+    }
+    this._warpLimited = limited;
+    const label = applied + '\u00D7' + (limited ? ' · LIMIT' : '');
+    const title = limited
+      ? 'Time warp limited to ' + cap + '× ' + reason + ' (requested ' + this.warp + '×)'
+      : 'Time warp ' + applied + '×';
+    for (const sel of ['#warpValue', '#mapWarpValue']) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+      el.textContent = label;
+      el.title = title;
+      if (el.classList) el.classList.toggle('is-restricted', limited);
+    }
     const pause = document.querySelector('#pauseButton');
     if (pause) {
       pause.classList.toggle('active', this.paused);
@@ -1200,7 +1257,7 @@ export class Game {
       mapPause.textContent = this.paused ? '▶' : 'Ⅱ';
     }
     document.querySelectorAll('[data-warp-value]').forEach(b =>
-      b.classList.toggle('is-active', Number(b.dataset.warpValue) === this.warp));
+      b.classList.toggle('is-active', Number(b.dataset.warpValue) === applied));
   }
 
   paintDebugPanel() {

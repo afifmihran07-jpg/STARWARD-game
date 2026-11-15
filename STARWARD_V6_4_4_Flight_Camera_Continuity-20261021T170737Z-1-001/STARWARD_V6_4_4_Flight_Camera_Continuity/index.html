@@ -23,6 +23,7 @@
         'js/flight/controls.js',
         'js/flight/flightCameraProfile.js',
         'js/flight/flightController.js',
+        'js/flight/flightPolicy.js',
         'js/flight/guidance.js',
         'js/flight/launchSite.js',
         'js/game.js',
@@ -268,7 +269,7 @@
             </div>
             <div id="flightTools" class="fh-warp" role="group" aria-label="Time warp">
               <button id="pauseButton" class="fh-pause" type="button">PAUSE [P]</button>
-              <b id="warpValue" hidden>1&#x00D7;</b>
+              <b id="warpValue" class="fh-warp-value" aria-live="polite">1&#x00D7;</b>
               <button class="fh-warp-btn" type="button" data-warp-value="1">1x</button>
               <button class="fh-warp-btn" type="button" data-warp-value="2">2x</button>
               <button class="fh-warp-btn" type="button" data-warp-value="5">5x</button>

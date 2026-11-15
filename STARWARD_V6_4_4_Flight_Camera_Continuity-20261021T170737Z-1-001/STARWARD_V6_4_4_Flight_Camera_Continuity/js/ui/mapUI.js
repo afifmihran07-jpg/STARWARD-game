@@ -200,7 +200,7 @@ export function updateBodyInfo(game) {
   setText('#nodeDeltaV', nodeDv ? (nodeDv > 0 ? '+' : '') + Math.round(nodeDv) + ' m/s' : '—');
 
   // ---- Bottom: Telemetry Bridge ----
-  setText('#bridgeWarpMultiplier', (game.warp || 1) + '×');
+  setText('#bridgeWarpMultiplier', appliedWarp(game) + '×');
   if (rocket) {
     const speed = Math.hypot(rocket.velocity.x, rocket.velocity.y) / 1000;
     setText('#bridgeVelocity', speed.toFixed(1) + ' km/s');
@@ -280,5 +280,10 @@ export function initBodyFocusList(game) {
 /** Update the warp scale display on the bottom bridge. */
 export function updateBridgeWarp(game) {
   const val = document.querySelector('#bridgeWarpValue');
-  if (val) val.textContent = (game.warp || 1).toFixed(2) + 'x/s';
+  if (val) val.textContent = appliedWarp(game).toFixed(2) + 'x/s';
+}
+
+/** The warp the simulation actually runs at (altitude-limited). */
+function appliedWarp(game) {
+  return typeof game.appliedWarp === 'function' ? game.appliedWarp() : (game.warp || 1);
 }

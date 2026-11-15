@@ -671,7 +671,7 @@ function drawScaleBar(ctx, cam, compressed) {
 
 function drawModeBadge(ctx, game, compressed, chrome) {
   ctx.save();
-  const label = (compressed ? 'COMPRESSED MAP' : 'TRUE SCALE') + ' · ' + (game.warp > 1 ? game.warp + '× TIME' : 'REAL TIME');
+  const label = (compressed ? 'COMPRESSED MAP' : 'TRUE SCALE') + ' · ' + (mapWarp(game) > 1 ? mapWarp(game) + '× TIME' : 'REAL TIME');
   const y = chrome.top + 8;   // pinned under the measured top bar, never clipped
   ctx.font = '600 11px ui-monospace, monospace';
   const w = ctx.measureText(label).width + 22;
@@ -715,3 +715,7 @@ export function pickBody(x, y, game) {
   return best ? best.body : null;
 }
 
+/** The warp the simulation actually runs at (altitude-limited). */
+function mapWarp(game) {
+  return typeof game.appliedWarp === 'function' ? game.appliedWarp() : game.warp;
+}
