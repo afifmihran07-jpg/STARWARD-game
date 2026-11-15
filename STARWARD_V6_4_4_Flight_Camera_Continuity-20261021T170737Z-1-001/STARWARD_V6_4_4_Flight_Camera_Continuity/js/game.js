@@ -1295,6 +1295,8 @@ export class Game {
     if (pause) {
       pause.classList.toggle('active', this.paused);
       pause.textContent = this.paused ? 'RESUME [P]' : 'PAUSE [P]';
+      // The dashboard shows only the ❙❙ / ▶ glyph; name the action for AT.
+      pause.setAttribute('aria-label', this.paused ? 'Resume (P)' : 'Pause (P)');
     }
     const mapPause = document.querySelector('#mapPause');
     if (mapPause) {

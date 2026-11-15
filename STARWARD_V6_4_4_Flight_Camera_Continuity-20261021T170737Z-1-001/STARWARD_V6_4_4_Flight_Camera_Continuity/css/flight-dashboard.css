@@ -616,6 +616,11 @@ body[data-ui-mode="flight"] #pauseButton.fh-pause::before {
   line-height: 1;
 }
 body[data-ui-mode="flight"] #pauseButton.fh-pause.active::before { content: "▶"; }
+/* style.css has body[data-ui-mode="flight"] #flightTools #pauseButton
+   { padding:7px 8px; font-size:7px } (two IDs), which out-ranked the rule
+   above and painted "PAUSE [P]" over the glyph. This selector is more
+   specific (two IDs + class), so the round icon button keeps its look. */
+body[data-ui-mode="flight"] #flightTools #pauseButton.fh-pause { padding: 0; font-size: 0; }
 body[data-ui-mode="flight"] #pauseButton.fh-pause:hover { background: rgba(40,190,215,.22); }
 
 body[data-ui-mode="flight"] .fh-warp-btn {
@@ -634,7 +639,9 @@ body[data-ui-mode="flight"] .fh-warp-btn:hover { color: #bfe0ec; background: rgb
 body[data-ui-mode="flight"] .fh-warp-btn.is-active { color: #5ceef9; background: rgba(40,180,205,.12); }
 /* Applied time warp; amber when the altitude limit holds a request back. */
 body[data-ui-mode="flight"] #warpValue.fh-warp-value {
-  min-width: 26px;
+  /* Own fixed slot: "2× · LIMIT" never pushes or overlaps its neighbours. */
+  flex: 0 0 auto;
+  min-width: 48px;
   padding: 0 3px;
   color: #5ceef9;
   font-family: var(--mono);

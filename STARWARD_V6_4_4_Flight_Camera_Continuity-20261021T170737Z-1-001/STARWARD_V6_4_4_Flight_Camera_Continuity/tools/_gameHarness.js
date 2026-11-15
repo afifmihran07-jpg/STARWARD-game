@@ -8,7 +8,9 @@ export const stubElement = id => ({
   dataset: {}, scrollTop: 0, scrollHeight: 500, onclick: null, title: '', className: '',
   style: {setProperty() {}},
   classList: {toggle() {}, add() {}, remove() {}, contains: () => false},
-  setAttribute() {}, getAttribute: () => null, addEventListener() {}, focus() {},
+  attrs: {},
+  setAttribute(k, v) { this.attrs[k] = String(v); }, getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
+  addEventListener() {}, focus() {},
   appendChild: n => n, append() {}, remove() {},
   querySelector: () => null, querySelectorAll: () => [],
   replaceChildren(...nodes) { this.textContent = nodes.map(n => typeof n === 'string' ? n : '\n').join(''); }
