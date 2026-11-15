@@ -139,7 +139,9 @@ body[data-ui-mode="flight"] #metrics .metric:first-child::after {
 body[data-ui-mode="flight"] .fh-velocity-meta {
   position: absolute;
   right: 13px;
-  top: 82px;
+  /* Sits above the velocity unit ("m/s"); at 82px the regime label
+     ("VACUUM", "SUPERSONIC") overlapped it. */
+  top: 69px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -232,6 +234,9 @@ body[data-ui-mode="flight"] .fh-more .metrics--more {
   border-radius: 0 0 6px 6px;
   background: rgba(5,16,27,.98);
   box-shadow: 0 18px 32px rgba(0,0,0,.48);
+  /* One label/value per row: two columns squeezed values like
+     "30.6 kPa @ 6.0 km" into each other in this narrow card. */
+  grid-template-columns: 1fr;
 }
 body[data-ui-mode="flight"] .fh-more .metric {
   display: flex;
@@ -712,6 +717,11 @@ body[data-ui-mode="flight"] #missionOpsPanel {
 }
 body[data-ui-mode="flight"].mission-tools-open #missionPanel { top: 244px; }
 body[data-ui-mode="flight"].mission-tools-open #missionOpsPanel { top: 402px; }
+/* While "Full telemetry" is open its dropdown (max 190px) occupies the
+   space under the card, so the mission and ops panels move below it
+   instead of being covered. */
+body[data-ui-mode="flight"]:has(#hud .fh-more[open]) #missionPanel { top: 434px; }
+body[data-ui-mode="flight"]:has(#hud .fh-more[open]) #missionOpsPanel { top: 592px; }
 body[data-ui-mode="flight"] .flight-mission-toggle { left: 16px; bottom: 14px; }
 
 /* --------------------------- responsive --------------------------- */
