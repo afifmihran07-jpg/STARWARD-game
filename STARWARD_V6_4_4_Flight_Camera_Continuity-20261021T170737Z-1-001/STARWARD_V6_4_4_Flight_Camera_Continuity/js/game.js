@@ -84,6 +84,8 @@ export class Game {
     this.missionLaunchRecord = null;
     this.opsAccum = 0;
     this.seededTestOrbit = false;
+    /** Which vehicle the flight camera follows: 'carrier' or 'spacecraft'. View only. */
+    this.cameraFocus = 'carrier';
 
     this.acc = 0;
     this.last = performance.now();
@@ -206,6 +208,7 @@ export class Game {
     on('#missionInstrumentToggle', () => this.toggleScienceInstrument());
     on('#missionDownlink', () => this.downlinkMission());
     on('#evaluateMission', () => this.evaluateMission());
+    on('#cameraFocusButton', () => this.toggleCameraFocus());
     on('#mapFocus', () => focusBody(this, this.selected));
     on('#mapFit', () => fitSystem(this));
     on('#mapFitBody', () => fitBody(this, this.selected));
@@ -568,8 +571,44 @@ export class Game {
     }
   }
 
+  /** The vehicle the camera follows (read only — never modified here). */
+  focusVehicle() {
+    const craft = this.deployedSpacecraft;
+    return this.cameraFocus === 'spacecraft' && craft && craft !== this.rocket ? craft : this.rocket;
+  }
+
+  /**
+   * V key / VIEW button: switch the camera between the carrier and the
+   * deployed spacecraft. Purely a view change: no vehicle state is touched.
+   */
+  toggleCameraFocus(target) {
+    const craft = this.deployedSpacecraft;
+    const canFocusCraft = !!craft && craft !== this.rocket;
+    const next = target || (this.cameraFocus === 'spacecraft' ? 'carrier' : 'spacecraft');
+    if (next === 'spacecraft' && !canFocusCraft) {
+      this.toast('No deployed spacecraft to view yet');
+      return this.cameraFocus;
+    }
+    this.cameraFocus = next;
+    this.updateFlightCamera(true);
+    this.syncCameraFocusButton();
+    if (!target) this.toast('Camera: ' + (next === 'spacecraft' ? 'deployed spacecraft' : 'launch vehicle (carrier)'));
+    return this.cameraFocus;
+  }
+
+  syncCameraFocusButton() {
+    const btn = document.querySelector('#cameraFocusButton');
+    if (!btn) return;
+    const craft = this.deployedSpacecraft;
+    const available = !!craft && craft !== this.rocket;
+    btn.disabled = !available;
+    btn.textContent = this.cameraFocus === 'spacecraft' && available ? 'VIEW: CRAFT' : 'VIEW: CARRIER';
+    btn.title = available ? 'Switch camera between carrier and spacecraft (V)' : 'Available after DEPLOY SPACECRAFT (V)';
+    if (btn.classList) btn.classList.toggle('is-active', this.cameraFocus === 'spacecraft' && available);
+  }
+
   updateFlightCamera(immediate = false, dt = 1 / 60) {
-    const rocket = this.rocket;
+    const rocket = this.focusVehicle();
     if (!rocket) return;
     // Keep the chase zoom tied to the vehicle, not its distance from the
     // ground. This preserves the stable close framing throughout ascent.
@@ -822,6 +861,8 @@ export class Game {
     this.spacecraftOrbit = null;
     this.missionLaunchRecord = null;
     this.seededTestOrbit = false;
+    this.cameraFocus = 'carrier';
+    this.syncCameraFocusButton();
     const debrief = document.querySelector('#missionDebrief');
     if (debrief) debrief.hidden = true;
   }
@@ -894,9 +935,11 @@ export class Game {
     this.deployedSpacecraft = craft;
     this.spacecraftOrbit = orbitElements(craft.position, craft.velocity, craft.body);
     this.orbit = orbitElements(rocket.position, rocket.velocity, rocket.body);
+    // Follow the new spacecraft straight away (view only; V switches back).
+    if (craft !== rocket) this.toggleCameraFocus('spacecraft');
     updateFlightUI(this, this.orbit);
     this.refreshMissionOpsPanel();
-    this.toast(result.message);
+    this.toast(result.message + ' Camera on the spacecraft — press V for the carrier.');
     return result;
   }
 
@@ -1107,6 +1150,8 @@ export class Game {
     // G: autopilot on/off (FLIGHT and MAP). It targets the selected mission
     // profile's orbit altitude, or 200 km when the profile has none.
     if ((this.mode === 'FLIGHT' || this.mode === 'MAP') && this.rocket && hit('KeyG')) this.toggleAutopilot();
+
+    if (this.mode === 'FLIGHT' && this.rocket && hit('KeyV')) this.toggleCameraFocus();
 
     if (this.mode === 'FLIGHT' && this.rocket && hit('KeyT')) {
       this.rocket.sas = !this.rocket.sas;

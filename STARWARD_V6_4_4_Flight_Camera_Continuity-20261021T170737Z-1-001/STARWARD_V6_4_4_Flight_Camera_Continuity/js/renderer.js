@@ -502,7 +502,14 @@ export class Renderer {
       if (r.hasFlown || poweredFlight) this.trajectory(game);
       this.vehicle(game, dt, alt);
       if (game.atmosphereExitPulse) this.atmosphereExitEffect(game);
-      if (game.deployedSpacecraft && game.deployedSpacecraft !== game.rocket) this.spacecraftMarker(game, game.deployedSpacecraft);
+      if (game.deployedSpacecraft && game.deployedSpacecraft !== game.rocket) {
+        const craft = game.deployedSpacecraft;
+        // Draw the deployed spacecraft's real parts with the same vehicle
+        // renderer, through a read-only view whose rocket is the craft.
+        const view = Object.create(game, {rocket: {value: craft}});
+        this.vehicle(view, 0, craft.body ? craft.altitudeAboveSurface(craft.body) : alt);
+        if (game.cameraFocus !== 'spacecraft') this.spacecraftMarker(game, craft);
+      }
       if (r.hasFlown || poweredFlight) this.flightMarkers(game);
       if (r.crashed) this.banner('VEHICLE DESTROYED — fix the design and launch again', '#ff9a9a');
       else if (r.landed && r.hasFlown) {

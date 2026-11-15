@@ -139,6 +139,8 @@ export function updateFlightUI(game, orbit) {
       // Applied warp (altitude-limited), not the raw request.
       ['WARP', (typeof game.appliedWarp === 'function' ? game.appliedWarp() : game.warp) + '\u00D7' +
         (typeof game.appliedWarp === 'function' && game.appliedWarp() < game.warp ? ' · LIMITED' : '')],
+      ['CAMERA', game.cameraFocus === 'spacecraft' && game.deployedSpacecraft && game.deployedSpacecraft !== r
+        ? 'SPACECRAFT [V]' : 'CARRIER [V]'],
       ['PRIMARY', body.name],
       ['ENGINES', isSpacecraft ? 'NONE (SPACECRAFT)' : st.engines + ' fitted']
     ];
