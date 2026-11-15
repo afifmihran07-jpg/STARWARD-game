@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {makeGame, element} from './_gameHarness.js';
+import {updateFlightUI} from '../js/ui/flightUI.js';
 
 let checks = 0;
 const ok = (c, m) => { assert.ok(c, m); checks++; };
@@ -35,6 +36,28 @@ function pauseFontRules(css) {
   eq(element('pauseButton').getAttribute('aria-label'), 'Pause (P)', 'aria-label while running');
   g.paused = true; g.syncFlightTools();
   eq(element('pauseButton').getAttribute('aria-label'), 'Resume (P)', 'aria-label while paused');
+}
+
+/* ---- Fix 2: stage button says what SPACE will do ------------------------ */
+{
+  const label = () => (element('stageLine').textContent + ' · ' + element('stageAction').textContent).replace(/ · $/, '');
+  // Expected labels at each SPACE press, from the pad (independent of the code).
+  const plans = {
+    starter: ['IGNITE · STAGE 1', 'FINAL STAGE'],
+    earthObservation: ['IGNITE · STAGE 1', 'SEPARATE · STAGE 1', 'FINAL STAGE'],
+    lunar: ['IGNITE · STAGE 1', 'SEPARATE · STAGE 1', 'SEPARATE · STAGE 2', 'FINAL STAGE']
+  };
+  for (const [preset, expected] of Object.entries(plans)) {
+    const g = makeGame();
+    g.loadPresetRocket(preset); g.launch();
+    expected.forEach((want, i) => {
+      updateFlightUI(g, g.orbit);
+      eq(label(), want, `${preset}: label after ${i} SPACE press(es)`);
+      eq(element('stageButton').disabled, want === 'FINAL STAGE', `${preset}: button ${want === 'FINAL STAGE' ? 'disabled' : 'enabled'} at "${want}"`);
+      if (want !== 'FINAL STAGE') g.stage();
+    });
+    if (preset === 'earthObservation') ok(g.rocket.payloadAttached, 'earthObservation: FINAL STAGE while the engineless payload is attached');
+  }
 }
 
 console.log(`${checks} checks passed: UI fixes`);

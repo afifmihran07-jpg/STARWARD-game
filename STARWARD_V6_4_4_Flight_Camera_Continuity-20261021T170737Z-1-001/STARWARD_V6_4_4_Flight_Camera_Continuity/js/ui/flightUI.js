@@ -225,10 +225,16 @@ export function updateFlightUI(game, orbit) {
     const stageLine = document.querySelector('#stageLine');
     const stageAction = document.querySelector('#stageAction');
     const stageNumber = Math.min(Math.max(1, r.stageNumber), r.totalStages);
-    if (stageLine) stageLine.textContent = isSpacecraft ? 'SPACECRAFT' : 'STAGE ' + stageNumber;
-    if (stageAction) stageAction.textContent = isSpacecraft ? 'DEPLOYED'
-      : game.deployedSpacecraft ? 'SPACECRAFT DEPLOYED'
-      : r.payloadAttached ? 'PAYLOAD ATTACHED' : 'SEPARATION';
+    // What SPACE does next, from the real staging state: ignite stage 1,
+    // separate the lit stage (n counts jettisoned stages too), or nothing
+    // more to stage (the engineless payload stays until DEPLOY).
+    const [line, action] = isSpacecraft ? ['SPACECRAFT', 'DEPLOYED']
+      : game.deployedSpacecraft ? ['STAGE ' + stageNumber, 'SPACECRAFT DEPLOYED']
+      : r.stageIndex < 0 ? ['IGNITE', 'STAGE 1']
+      : r.canStage() ? ['SEPARATE', 'STAGE ' + stageNumber]
+      : ['FINAL STAGE', ''];
+    if (stageLine) stageLine.textContent = line;
+    if (stageAction) stageAction.textContent = action;
     stageBtn.disabled = isSpacecraft || !r.canStage();
   }
 
