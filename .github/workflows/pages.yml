@@ -1,0 +1,44 @@
+# Publishes the STARWARD game folder as a GitHub Pages site.
+# One-time setup: repository Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions". Then every push to main/master redeploys.
+name: Deploy STARWARD to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  GAME_DIR: STARWARD_V6_4_4_Flight_Camera_Continuity-20261021T170737Z-1-001/STARWARD_V6_4_4_Flight_Camera_Continuity
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Case-sensitive Linux runner: catches filename-case mistakes that
+      # Windows hides, and checks every module is loaded through one URL.
+      - name: Pages readiness checks
+        working-directory: ${{ env.GAME_DIR }}
+        run: node tools/pagesReadinessTest.js && node tools/moduleUrlTest.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.GAME_DIR }}
+      - id: deployment
+        uses: actions/deploy-pages@v4
